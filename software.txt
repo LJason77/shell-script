@@ -1,3 +1,13 @@
+# 虚拟机
+echo "deb [arch=amd64] http://download.virtualbox.org/virtualbox/debian $(lsb_release -cs) contrib" | sudo tee -a /etc/apt/sources.list.d/virtualbox.list
+wget -q https://www.virtualbox.org/download/oracle_vbox_2016.asc -O- | sudo apt-key add -
+wget -q https://www.virtualbox.org/download/oracle_vbox.asc -O- | sudo apt-key add -
+up
+virtualbox=$(curl http://download.virtualbox.org/virtualbox/LATEST.TXT)
+cd /mnt/Executable/ ; wget https://download.virtualbox.org/virtualbox/$virtualbox/Oracle_VM_VirtualBox_Extension_Pack-$virtualbox.vbox-extpack
+sudo apt -y install virtualbox-6.1
+sudo gpasswd -a ${USER} vboxusers
+
 # XMind
 google-chrome-stable https://www.xmind.net/download/
 cd $(sudo find / 2>/dev/null | grep 'XMind.*app.asar$' |grep -o '.*/')
