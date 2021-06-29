@@ -1,0 +1,182 @@
+touch ssh ; code config.txt ; code /mnt/Sync/Server/RaspberryPi/boot/config.txt
+ssh-copy-id -i /mnt/Sync/Server/ssh/id_ed25519.pub pi@192.168.3.102
+ssh pi@192.168.3.102
+
+sudo passwd pi 
+
+# 代理
+proxy=192.168.3.102
+export http_proxy=http://$proxy:8123/ && export https_proxy=http://$proxy:8123/ 
+echo -e "Acquire::http::proxy \"http://$proxy:8123/\";\nAcquire::https::Proxy \"http://$proxy:8123/\";" | sudo tee /etc/apt/apt.conf
+
+sudo apt purge -y firefox* hplip* printer-driver* gedit* vim-common && sudo apt -y autoremove --purge
+sudo apt -y install --no-install-recommends vim
+sudo rm -rf /usr/share/hplip /usr/share/fonts/truetype/liberation2 /usr/share/fonts/truetype/openoffice
+
+# 修复 apt 自动补全
+sudo apt install bash-completion --reinstall
+
+# 禁用传统 SWAP
+sudo vi /etc/fstab
+# 修改交换文件大小(pi)
+sudo vi /etc/dphys-swapfile ; sudo systemctl restart dphys-swapfile.service
+sudo reboot
+
+# 启用 zRAM
+echo "zram" | sudo tee /etc/modules-load.d/zram.conf
+echo "options zram num_devices=1" | sudo tee /etc/modprobe.d/zram.conf
+# pi
+# echo 'KERNEL=="zram0", ATTR{disksize}="1024M",TAG+="systemd"' | sudo tee /etc/udev/rules.d/99-zram.rules
+echo 'KERNEL=="zram0", ATTR{disksize}="2048M",TAG+="systemd"' | sudo tee /etc/udev/rules.d/99-zram.rules
+sudo vi /etc/systemd/system/zram.service && sudo systemctl enable zram
+```ini
+[Unit]
+Description=Swap with zram
+After=multi-user.target
+
+[Service]
+Type=oneshot 
+RemainAfterExit=true
+ExecStartPre=/sbin/mkswap /dev/zram0
+ExecStart=/sbin/swapon /dev/zram0
+ExecStop=/sbin/swapoff /dev/zram0
+
+[Install]
+WantedBy=multi-user.target
+```
+
+# 系统参数
+cat /proc/sys/vm/swappiness
+sudo sysctl -a | grep vm.swappiness
+echo "vm.swappiness = 10" | sudo tee -a /etc/sysctl.conf
+sudo sysctl -a | grep net.core.somaxconn
+echo "net.core.somaxconn = 1024" | sudo tee -a /etc/sysctl.conf
+sudo sysctl -a | grep kernel.shmmax
+echo "kernel.shmmax = 2147483648" | sudo tee -a /etc/sysctl.conf
+sudo sysctl -a | grep fs.inotify.max_user_watches
+echo 'fs.inotify.max_user_watches = 524288' | sudo tee -a /etc/sysctl.conf
+sudo sysctl -p
+
+# 修改交换文件大小(pi)
+sudo vi /etc/dphys-swapfile ; sudo systemctl restart dphys-swapfile.service
+sudo reboot
+
+# 删除快捷方式
+rm -rf Desktop
+cd /usr/share/applications
+sudo rm -rf python3.8.desktop vim.desktop evolution-calendar.desktop ; cd
+
+sudo vi /etc/bash.bashrc
+
+# 挂载存储
+sudo fdisk -l
+echo "/dev/sda1 /mnt ntfs-3g uid=ljason,gid=ljason,silent,locale=zh_CN.utf8 0 0" | sudo tee -a /etc/fstab
+sudo umount /dev/sda1 ; sudo mount /dev/sda1 /mnt
+mkdir ~/VHD
+sudo mount /mnt/Linux/VHD.img ~/VHD
+echo "/mnt/Linux/VHD.img /home/ljason/VHD ext4 defaults 0 0" | sudo tee -a /etc/fstab
+cd ~/VHD/gitSou/dotfiles ; ./install.sh ; cd
+rm -rf Music && ln -s /mnt/System/Music .
+rm -rf Pictures && ln -s /mnt/System/Pictures .
+rm -rf Videos && ln -s /mnt/System/Videos .
+rm -rf Downloads && ln -s /mnt/System/Downloads .
+cp /mnt/Sync/Server/Desktop/ljason/ssh/id_ed25519 .ssh/
+chmod 600 .ssh/id_ed25519
+
+# 挂载硬盘（pi）
+sudo fdisk -l
+sudo umount /dev/sda1 ; sudo mount /dev/sda1 /mnt ; ls -la /mnt/
+ls -l  /dev/disk/by-uuid/ | grep sda1 | awk '{print $9}'
+echo "UUID=$(ls -l  /dev/disk/by-uuid/ | grep sda1 | awk '{print $9}') /mnt ext4 defaults 0 0" | sudo tee -a /etc/fstab ; cat /etc/fstab
+
+# 隐藏挂载硬盘
+gsettings set org.gnome.shell.extensions.dash-to-dock show-mounts false
+# 隐藏桌面文件夹
+echo "Public" >> ~/.hidden
+
+# 安装字体
+mkdir ~/.local/share/fonts
+cp /mnt/System/Documents/Font/FiraCode/otf/FiraCode-* ~/.local/share/fonts/
+cp /mnt/System/Documents/Font/source-han-serif/SuperOTC/SourceHanSerif.ttc ~/.local/share/fonts/
+fc-cache -f -v
+
+# apt
+sudo add-apt-repository ppa:git-core/ppa
+sudo add-apt-repository ppa:mc3man/mpv-tests
+echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" | sudo tee -a /etc/apt/sources.list.d/google-chrome.list
+echo "deb [arch=amd64] http://packages.microsoft.com/repos/vscode stable main" | sudo tee -a /etc/apt/sources.list.d/vscode.list
+wget -q https://packages.microsoft.com/keys/microsoft.asc -O- | sudo apt-key add -
+wget -q https://dl-ssl.google.com/linux/linux_signing_key.pub -O- | sudo apt-key add -
+sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 379CE192D401AB61
+up ; sudo apt install -y git ncdu google-chrome-stable make nginx gcc g++ openssh-server screen ntpdate curl net-tools mpv jq gnome-tweak-tool chrome-gnome-shell fcitx-googlepinyin stow code imwheel ffmpeg rename gettext
+# apt(pi)
+sudo apt -y install git ncdu screen samba ffmpeg lsof rename
+
+# git-lfs
+# pi
+# curl -sSf "https://packagecloud.io/install/repositories/github/git-lfs/config_file.list?os=Debian&dist=$(lsb_release -cs)&source=script" | sudo tee /etc/apt/sources.list.d/git-lfs.list
+curl -sSf "https://packagecloud.io/install/repositories/github/git-lfs/config_file.list?os=Ubuntu&dist=$(lsb_release -cs)&source=script" | sudo tee /etc/apt/sources.list.d/git-lfs.list
+wget -q https://packagecloud.io/github/git-lfs/gpgkey -O- | sudo apt-key add -
+up && sudo apt -y install git-lfs
+
+google-chrome-stable --proxy-server="socks5://$proxy:1080"
+# GNOME 扩展
+google-chrome-stable https://extensions.gnome.org/extension/104/netspeed/
+
+# 时间
+sudo ntpdate ntp5.aliyun.com
+sudo hwclock --localtime --systohc
+
+# 添加手机到 udev
+echo 'SUBSYSTEM=="usb", ATTRS{idVendor}=="18d1",ATTRS{idProduct}=="4ee0",MODE="0666"' | sudo tee /etc/udev/rules.d/50-pixel.rules
+echo 'SUBSYSTEM=="usb", ATTRS{idVendor}=="18d1",ATTRS{idProduct}=="4ee7",MODE="0666"' | sudo tee /etc/udev/rules.d/50-nexus.rules
+echo 'SUBSYSTEM=="usb", ATTRS{idVendor}=="18d1",ATTRS{idProduct}=="d00d",MODE="0666"' | sudo tee /etc/udev/rules.d/50-huawei.rules
+echo 'SUBSYSTEM=="usb", ATTRS{idVendor}=="045e",ATTRS{idProduct}=="02fe",MODE="0666"' | sudo tee /etc/udev/rules.d/50-xbox.rules
+sudo systemctl restart udev.service
+
+# 优化系统
+gsettings set org.gnome.shell.extensions.dash-to-dock click-action 'minimize'
+gsettings set org.gnome.desktop.interface show-battery-percentage true
+gsettings set org.gnome.desktop.session idle-delay 3600
+
+# 安装 Python 3.9
+screen -S py
+## https://www.python.org/downloads/source/
+version=3.9.5
+wget https://www.python.org/ftp/python/$version/Python-$version.tar.xz
+tar Jxf Python-$version.tar.xz ; cd Python-$version/
+sudo apt install -y libsqlite3-dev libssl-dev libffi-dev libbz2-dev zlib1g-dev
+./configure --enable-loadable-sqlite-extensions --enable-optimizations 
+make -j16 ; sudo make install
+python3 -m pip install --upgrade pip
+cd .. ; sudo rm -rf Python-$version*
+exit
+
+# rust
+mkdir ~/.tmp/registry
+mkdir ~/.tmp/git
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+source ~/.cargo/env
+rustup completions bash cargo
+source $(rustc --print sysroot)/etc/bash_completion.d/cargo
+
+# 模糊搜索
+git clone --depth=1 https://github.com/junegunn/fzf.git ~/.fzf
+~/.fzf/install
+
+# 现代 ls
+cargo install exa
+mkdir -p ~/.local/share/bash-completion/completions
+curl -L https://raw.githubusercontent.com/ogham/exa/master/completions/bash/exa > ~/.local/share/bash-completion/completions/exa
+
+# 现代 cat
+cargo install bat
+
+# git 对比
+cargo install git-delta
+
+# 重复文件
+cargo install czkawka_cli
+
+# 压力测试
+cargo install drill
