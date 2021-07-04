@@ -1,0 +1,10 @@
+tar Jxf android-studio* -C /usr/JetBrains/
+tar Jxf DataGrip* -C /usr/JetBrains/
+tar Jxf IdeaIU* -C /usr/JetBrains/
+tar Jxf PyCharm* -C /usr/JetBrains/
+tar Jxf WebStorm* -C /usr/JetBrains/
+
+
+
+https://plugins.zhile.io
+IDE Eval Reset
