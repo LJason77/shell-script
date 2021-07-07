@@ -1,4 +1,4 @@
-proxy=192.168.3.113
+proxy=192.168.3.101
 up
 
 sudo apt -y install linux-image-extra-virtual apt-transport-https ca-certificates curl software-properties-common
@@ -8,12 +8,73 @@ echo "deb [arch=amd64] http://download.docker.com/linux/ubuntu $(lsb_release -cs
 
 up ; sudo apt -y install docker-ce
 
+sudo vi /etc/docker/daemon.json
+```json
+{
+    "max-concurrent-downloads": 10,
+    "max-concurrent-uploads": 20,
+    "log-level": "warn",
+    "log-opts": {
+        "max-size": "2m",
+        "max-file": "5"
+    },
+    "live-restore": true
+}
+```
+
 # 安装 docker-compose
 pip3 install docker-compose
 curl -L https://raw.githubusercontent.com/docker/compose/master/contrib/completion/bash/docker-compose > ~/.local/share/bash-completion/completions/docker-compose 
+
+# 代理
+sudo mkdir -p /etc/systemd/system/docker.service.d/
+echo -e "[Service]\nEnvironment=\"https_proxy=http://$proxy:8123/\" \"http_proxy=http://$proxy:8123/\"" | sudo tee /etc/systemd/system/docker.service.d/http-proxy.conf
 
 sudo gpasswd -a ${USER} docker
 sudo systemctl daemon-reload
 sudo systemctl restart docker.service
 sudo systemctl restart docker.socket
 
+# 基础镜像
+docker pull alpine
+docker pull golang:alpine
+docker pull linuxserver/qbittorrent
+docker pull rust:alpine
+docker pull ubuntu:20.04
+
+# clash
+# git@github.com:LJason77/docker-clash.git
+# cd /mnt/Docker/docker-Src/docker-clash
+cd ~/VHD/gitSou/docker-clash
+docker build --build-arg http_proxy="http://$proxy:8123" --build-arg https_proxy="http://$proxy:8123" -t clash .
+# cd /mnt/clash.yaml/
+cd 
+git pull
+# docker rm -f clash ; docker run -d --restart always --name clash -v /mnt/clash.yaml/clash.yaml:/root/.config/clash/config.yaml --network host clash
+docker rm -f clash ; docker run -d --restart always --name clash -v ~/Documents/clash.yaml/clash.yaml:/root/.config/clash/config.yaml --network host clash
+
+proxy=192.168.3.102
+echo -e "[Service]\nEnvironment=\"https_proxy=http://$proxy:8123/\" \"http_proxy=http://$proxy:8123/\"" | sudo tee /etc/systemd/system/docker.service.d/http-proxy.conf
+
+# Aria2
+# cd /mnt/Docker/docker-Src/docker-aria2-with-webui/
+cd ~/VHD/gitSou/docker-aria2-with-webui
+git pull
+docker build --build-arg http_proxy="http://$proxy:8123" --build-arg https_proxy="http://$proxy:8123" -t aria2 .
+# docker rm -f aria2 ; docker run -d --name aria2 --restart always --network host -e SECRET=333544 -v /mnt/downloads:/data aria2
+docker rm -f aria2 ; docker run -d --restart always --name aria2 --network host -e SECRET=333544 -v ~/Downloads:/data aria2-with-webui
+
+# qbittorrent
+docker pull linuxserver/qbittorrent
+docker rm -f qbittorrent ; docker run -d --name qbittorrent --restart always -e PUID=1000 -e PGID=1000 -e TZ=Asia/Shanghai -e UMASK=022 -e WEBUI_PORT=8080 --network host -v /mnt/Data/qbittorrent/config:/config -v /mnt/downloads/qbittorrent:/downloads linuxserver/qbittorrent
+
+# ZeroNet
+# docker pull ljason/zeronet
+screen -S ZeroNet
+cd /mnt/Docker/docker-Src/ZeroNet/
+git fetch upstream
+git merge upstream/py3
+git pull
+docker build --build-arg http_proxy="http://$proxy:8123" --build-arg https_proxy="http://$proxy:8123" -t zeronet .
+docker rm -f zeronet ; docker run -d --name zeronet --restart always --network host -v /mnt/Data/ZeroNet:/root/data zeronet
+exit

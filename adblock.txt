@@ -1,4 +1,4 @@
-https://gitee.com/xinggsf/Adblock-Rule/raw/master/mv.txt
+! https://gitee.com/xinggsf/Adblock-Rule/raw/master/mv.txt
 
 *.datadoghq.com
 *.geojs.io
@@ -112,7 +112,7 @@ stackoverflow.com###sidebar
 vgtime.com##.hd_top.left.vg_head_message
 vgtime.com##.left
 www.facebook.com
-www.googletagmanager.com
+www.googletagmanager.com/*$script
 yystv.cn##.footer.clearfix
 yystv.cn##.nav
 yystv.cn##.recom-block
