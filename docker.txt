@@ -78,3 +78,7 @@ git pull
 docker build --build-arg http_proxy="http://$proxy:8123" --build-arg https_proxy="http://$proxy:8123" -t zeronet .
 docker rm -f zeronet ; docker run -d --name zeronet --restart always --network host -v /mnt/Data/ZeroNet:/root/data zeronet
 exit
+
+# darkhttpd
+git clone --depth=1 https://github.com/emikulic/darkhttpd.gi && cd darkhttpd
+docker build --build-arg http_proxy="http://$proxy:8123" --build-arg https_proxy="http://$proxy:8123" -t darkhttpd .
