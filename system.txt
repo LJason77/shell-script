@@ -180,3 +180,12 @@ cargo install czkawka_cli
 
 # 压力测试
 cargo install drill
+
+# github
+sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-key C99B11DEB97541F0
+sudo apt-add-repository https://cli.github.com/packages
+up ; sudo apt install gh
+
+# node
+sudo chown -R $(whoami):$(whoami) $(npm config get prefix)/{lib/node_modules,bin,share}
+npm install npm -g
