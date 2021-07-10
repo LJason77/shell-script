@@ -17,8 +17,7 @@ sudo vi /etc/docker/daemon.json
     "log-opts": {
         "max-size": "2m",
         "max-file": "5"
-    },
-    "live-restore": true
+    }
 }
 ```
 
@@ -31,9 +30,16 @@ sudo mkdir -p /etc/systemd/system/docker.service.d/
 echo -e "[Service]\nEnvironment=\"https_proxy=http://$proxy:8123/\" \"http_proxy=http://$proxy:8123/\"" | sudo tee /etc/systemd/system/docker.service.d/http-proxy.conf
 
 sudo gpasswd -a ${USER} docker
+
+# 移动 Docker 镜像
 sudo systemctl daemon-reload
-sudo systemctl restart docker.service
-sudo systemctl restart docker.socket
+sudo systemctl stop docker.socket
+sudo systemctl stop docker.service
+sudo mv /var/lib/docker /mnt/Docker/.dockerImages
+# 链接镜像
+#sudo rm -rf /var/lib/docker
+sudo ln -s /mnt/Docker/.dockerImages /var/lib/docker
+reboot
 
 # 基础镜像
 docker pull alpine
@@ -71,6 +77,7 @@ docker rm -f qbittorrent ; docker run -d --name qbittorrent --restart always -e 
 # ZeroNet
 # docker pull ljason/zeronet
 screen -S ZeroNet
+proxy=192.168.3.102
 cd /mnt/Docker/docker-Src/ZeroNet/
 git fetch upstream
 git merge upstream/py3
@@ -80,5 +87,20 @@ docker rm -f zeronet ; docker run -d --name zeronet --restart always --network h
 exit
 
 # darkhttpd
-git clone --depth=1 https://github.com/emikulic/darkhttpd.gi && cd darkhttpd
+git clone --depth=1 https://github.com/emikulic/darkhttpd.git && cd darkhttpd
 docker build --build-arg http_proxy="http://$proxy:8123" --build-arg https_proxy="http://$proxy:8123" -t darkhttpd .
+.. ; rm -rf darkhttpd
+
+# RssHub
+# git clone --depth=1 https://github.com/LJason77/docker-rsshub.git
+screen -S rsshub
+proxy=192.168.3.102
+cd /mnt/Docker/docker-Src/docker-rsshub
+docker build --build-arg http_proxy="http://$proxy:8123" --build-arg https_proxy="http://$proxy:8123" -t rsshub .
+docker rm -f rsshub ; docker run -d --restart always --name rsshub --network host -e REQUEST_RETRY=10 -e DEBUG_INFO=true -e EMAIL_CONFIG_ljason.ljason.cn="password=13035751097lL.&host=hwpop.exmail.qq.com&port=993" -e CACHE_CONTENT_EXPIRE=180 -e ACCESS_KEY=333544 -e NODE_TLS_REJECT_UNAUTHORIZED=0 -e PROXY_URI=http://$proxy:8123 -e BILIBILI_COOKIE_4744634=a0f6d132%2C1640459640%2Cc3d5b%2A61 rsshub
+exit
+
+# flowerss
+cd /mnt/Docker/docker-Src/docker-flowerss-bot/
+docker build --build-arg http_proxy="http://$proxy:8123" --build-arg https_proxy="http://$proxy:8123" -t flowerss .
+docker rm -f flowerss ; docker run --restart always --name flowerss -d --network host -v /mnt/Data/flowerss:/flowerss flowerss
