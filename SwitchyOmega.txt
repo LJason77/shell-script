@@ -134,7 +134,6 @@
 *.goo.gl +http
 *.google.com +http
 *.googleadservices.com +http
-*.googleapis.com +http
 *.googleblog.com +http
 *.googlecode.com +http
 *.googlesyndication.com +http
@@ -438,5 +437,6 @@ landing-pages.gog-statics.com +http
 profiles-static.gog.com +http
 static.gog.com +http
 translate.googleapis.com +direct
+*.googleapis.com +http
 
 * +direct
