@@ -104,3 +104,7 @@ exit
 cd /mnt/Docker/docker-Src/docker-flowerss-bot/
 docker build --build-arg http_proxy="http://$proxy:8123" --build-arg https_proxy="http://$proxy:8123" -t flowerss .
 docker rm -f flowerss ; docker run --restart always --name flowerss -d --network host -v /mnt/Data/flowerss:/flowerss flowerss
+
+# WarframeBot
+cd /mnt/Github/WarframeBot ; git pull
+docker build --build-arg http_proxy="http://$proxy:8123" --build-arg https_proxy="http://$proxy:8123" -t warframe .

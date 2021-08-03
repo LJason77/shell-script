@@ -184,6 +184,15 @@ cargo install drill
 # 现代 CP
 cargo install fcp
 
+# 现代 find
+cargo install fd-find
+
+# 命令行基准测试
+cargo install hyperfine
+
+# 更新所有 cargo 包
+cargo install $(cargo install --list | egrep '^[a-z0-9_-]+ v[0-9.]+:$' | cut -f1 -d' ')
+
 # github
 sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-key C99B11DEB97541F0
 sudo apt-add-repository https://cli.github.com/packages

@@ -1,7 +1,8 @@
 [SwitchyOmega Conditions]
 @with result
 
-*.wikimedia.org
+*.discourse-cdn.com +http
+*.wikimedia.org +http
 *.10musume.com +http
 *.1password.com +http
 *.1pondo.tv +http
