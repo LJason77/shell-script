@@ -187,6 +187,9 @@ cargo install fcp
 # 现代 find
 cargo install fd-find
 
+# 现代 du
+cargo install du-dust
+
 # 命令行基准测试
 cargo install hyperfine
 
