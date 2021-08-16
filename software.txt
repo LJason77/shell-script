@@ -15,3 +15,8 @@ cd $(find -E /mnt XMind$ /)/resources
 sudo mkdir -p temp_asar ; sudo npx asar extract app.asar temp_asar/
 sudo sed -i 's/{TRIAL:"trial",VALID:"valid",EXPIRED:"expired"}/{TRIAL:"trial",VALID:"trial",EXPIRED:"trial"}/g' "temp_asar/main/main.js" "temp_asar/renderer/common.js"
 sudo mv app.asar app.asar.bak ; sudo npx asar pack temp_asar/ app.asar ; sudo rm -rf temp_asar/
+
+# typora
+wget -qO - https://typora.io/linux/public-key.asc | sudo apt-key add -
+echo "deb [arch=amd64] https://typora.io/linux ./" | sudo tee -a /etc/apt/sources.list.d/typora.list
+up ; sudo apt install typora

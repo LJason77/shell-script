@@ -142,7 +142,7 @@ gsettings set org.gnome.desktop.session idle-delay 3600
 # 安装 Python 3.9
 screen -S py
 ## https://www.python.org/downloads/source/
-version=3.9.5
+version=3.9.6
 wget https://www.python.org/ftp/python/$version/Python-$version.tar.xz
 tar Jxf Python-$version.tar.xz ; cd Python-$version/
 sudo apt install -y libsqlite3-dev libssl-dev libffi-dev libbz2-dev zlib1g-dev
