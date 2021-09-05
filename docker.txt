@@ -96,7 +96,7 @@ docker build --build-arg http_proxy="http://$proxy:8123" --build-arg https_proxy
 screen -S rsshub
 proxy=192.168.3.102
 cd /mnt/Docker/docker-Src/docker-rsshub
-docker build --build-arg http_proxy="http://$proxy:8123" --build-arg https_proxy="http://$proxy:8123" -t rsshub .
+docker build --no-cache --build-arg http_proxy="http://$proxy:8123" --build-arg https_proxy="http://$proxy:8123" -t rsshub .
 docker rm -f rsshub ; docker run -d --restart always --name rsshub --network host -e REQUEST_RETRY=10 -e DEBUG_INFO=true -e EMAIL_CONFIG_ljason.ljason.cn="password=13035751097lL.&host=hwpop.exmail.qq.com&port=993" -e CACHE_CONTENT_EXPIRE=180 -e ACCESS_KEY=333544 -e NODE_TLS_REJECT_UNAUTHORIZED=0 -e PROXY_URI=http://$proxy:8123 -e BILIBILI_COOKIE_4744634=a0f6d132%2C1640459640%2Cc3d5b%2A61 rsshub
 exit
 

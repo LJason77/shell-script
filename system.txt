@@ -101,6 +101,8 @@ cp /mnt/System/Documents/Font/source-han-serif/SuperOTC/SourceHanSerif.ttc ~/.lo
 fc-cache -f -v
 
 # apt
+# echo "deb http://ppa.launchpad.net/git-core/ppa/ubuntu/ $(lsb_release -cs) main" | sudo tee -a /etc/apt/sources.list.d/git.list
+# echo "deb http://ppa.launchpad.net/mc3man/mpv-tests/ubuntu/ groovy main" | sudo tee -a /etc/apt/sources.list.d/mpv.list
 sudo add-apt-repository ppa:git-core/ppa
 sudo add-apt-repository ppa:mc3man/mpv-tests
 echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" | sudo tee -a /etc/apt/sources.list.d/google-chrome.list
@@ -142,7 +144,8 @@ gsettings set org.gnome.desktop.session idle-delay 3600
 # 安装 Python 3.9
 screen -S py
 ## https://www.python.org/downloads/source/
-version=3.9.6
+version=3.9.7
+fq
 wget https://www.python.org/ftp/python/$version/Python-$version.tar.xz
 tar Jxf Python-$version.tar.xz ; cd Python-$version/
 sudo apt install -y libsqlite3-dev libssl-dev libffi-dev libbz2-dev zlib1g-dev
@@ -153,8 +156,6 @@ cd .. ; sudo rm -rf Python-$version*
 exit
 
 # rust
-mkdir ~/.tmp/registry
-mkdir ~/.tmp/git
 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 source ~/.cargo/env
 rustup completions bash cargo
