@@ -50,9 +50,9 @@ cat /proc/sys/vm/swappiness
 sudo sysctl -a | grep vm.swappiness
 echo "vm.swappiness = 10" | sudo tee -a /etc/sysctl.conf
 sudo sysctl -a | grep net.core.somaxconn
-echo "net.core.somaxconn = 1024" | sudo tee -a /etc/sysctl.conf
+echo "net.core.somaxconn = 4096" | sudo tee -a /etc/sysctl.conf
 sudo sysctl -a | grep kernel.shmmax
-echo "kernel.shmmax = 2147483648" | sudo tee -a /etc/sysctl.conf
+echo "kernel.shmmax = 18446744073692774399" | sudo tee -a /etc/sysctl.conf
 sudo sysctl -a | grep fs.inotify.max_user_watches
 echo 'fs.inotify.max_user_watches = 524288' | sudo tee -a /etc/sysctl.conf
 sudo sysctl -p
@@ -101,15 +101,13 @@ cp /mnt/System/Documents/Font/source-han-serif/SuperOTC/SourceHanSerif.ttc ~/.lo
 fc-cache -f -v
 
 # apt
-# echo "deb http://ppa.launchpad.net/git-core/ppa/ubuntu/ $(lsb_release -cs) main" | sudo tee -a /etc/apt/sources.list.d/git.list
-# echo "deb http://ppa.launchpad.net/mc3man/mpv-tests/ubuntu/ groovy main" | sudo tee -a /etc/apt/sources.list.d/mpv.list
-sudo add-apt-repository ppa:git-core/ppa
-sudo add-apt-repository ppa:mc3man/mpv-tests
+echo "deb http://ppa.launchpad.net/git-core/ppa/ubuntu/ $(lsb_release -cs) main" | sudo tee -a /etc/apt/sources.list.d/git.list
+echo "deb http://ppa.launchpad.net/mc3man/mpv-tests/ubuntu/ groovy main" | sudo tee -a /etc/apt/sources.list.d/mpv.list
 echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" | sudo tee -a /etc/apt/sources.list.d/google-chrome.list
 echo "deb [arch=amd64] http://packages.microsoft.com/repos/vscode stable main" | sudo tee -a /etc/apt/sources.list.d/vscode.list
 wget -q https://packages.microsoft.com/keys/microsoft.asc -O- | sudo apt-key add -
 wget -q https://dl-ssl.google.com/linux/linux_signing_key.pub -O- | sudo apt-key add -
-sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 379CE192D401AB61
+sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 379CE192D401AB61 A1715D88E1DF1F24 90BD7EACED8E640A
 up ; sudo apt install -y git ncdu google-chrome-stable make nginx gcc g++ openssh-server screen ntpdate curl net-tools mpv jq gnome-tweak-tool chrome-gnome-shell fcitx-googlepinyin stow code imwheel ffmpeg rename gettext
 # apt(pi)
 sudo apt -y install git ncdu screen samba ffmpeg lsof rename
@@ -151,9 +149,14 @@ tar Jxf Python-$version.tar.xz ; cd Python-$version/
 sudo apt install -y libsqlite3-dev libssl-dev libffi-dev libbz2-dev zlib1g-dev
 ./configure --enable-loadable-sqlite-extensions --enable-optimizations 
 make -j16 ; sudo make install
+python3 -V
 python3 -m pip install --upgrade pip
 cd .. ; sudo rm -rf Python-$version*
 exit
+
+# 模糊搜索
+git clone --depth=1 https://github.com/junegunn/fzf.git ~/.fzf
+~/.fzf/install
 
 # rust
 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
@@ -161,35 +164,13 @@ source ~/.cargo/env
 rustup completions bash cargo
 source $(rustc --print sysroot)/etc/bash_completion.d/cargo
 
-# 模糊搜索
-git clone --depth=1 https://github.com/junegunn/fzf.git ~/.fzf
-~/.fzf/install
-
 # 现代 ls
 cargo install exa
 mkdir -p ~/.local/share/bash-completion/completions
 curl -L https://raw.githubusercontent.com/ogham/exa/master/completions/bash/exa > ~/.local/share/bash-completion/completions/exa
 
 # 现代 cat
-cargo install bat
-
-# git 对比
-cargo install git-delta
-
-# 重复文件
-cargo install czkawka_cli
-
-# 压力测试
-cargo install drill
-
-# 现代 CP
-cargo install fcp
-
-# 现代 find
-cargo install fd-find
-
-# 现代 du
-cargo install du-dust
+cargo install bat git-delta czkawka_cli drill fcp fd-find du-dust
 
 # 命令行基准测试
 cargo install hyperfine
@@ -203,5 +184,13 @@ sudo apt-add-repository https://cli.github.com/packages
 up ; sudo apt install gh
 
 # node
+version=14.17.6
+fq
+wget https://nodejs.org/dist/v$version/node-v$version.tar.gz
+tar zxf node-v$version.tar.gz ; cd node-v$version
+./configure
+make -j16 ; sudo make install
+node -v
+.. ; rm -rf node-v$version*
 sudo chown -R $(whoami):$(whoami) $(npm config get prefix)/{lib/node_modules,bin,share}
 npm install npm -g

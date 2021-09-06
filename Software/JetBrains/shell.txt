@@ -1,5 +1,14 @@
+cd ~/Documents/Software
+google-chrome-stable https://www.oracle.com/java/technologies/javase-downloads.html
+sudo tar Jxf jdk-*.tar.xz -C /usr/
+
+cd JetBrains
+sudo mkdir /usr/JetBrains ; sudo chown 1000:1000 $_
+
 tar Jxf android-studio* -C /usr/JetBrains/
+tar Jxf CLion* -C /usr/JetBrains/
 tar Jxf DataGrip* -C /usr/JetBrains/
+tar Jxf GoLand* -C /usr/JetBrains/
 tar Jxf IdeaIU* -C /usr/JetBrains/
 tar Jxf PyCharm* -C /usr/JetBrains/
 tar Jxf WebStorm* -C /usr/JetBrains/

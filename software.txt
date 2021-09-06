@@ -1,3 +1,8 @@
+# Telegram
+cd ~/Documents/Software/
+google-chrome-stable https://telegram.org/dl/desktop/linux
+sudo tar Jxf tsetup.*.tar.xz -C /opt/
+
 # 虚拟机
 echo "deb [arch=amd64] http://download.virtualbox.org/virtualbox/debian $(lsb_release -cs) contrib" | sudo tee -a /etc/apt/sources.list.d/virtualbox.list
 wget -q https://www.virtualbox.org/download/oracle_vbox_2016.asc -O- | sudo apt-key add -
@@ -9,7 +14,9 @@ sudo apt -y install virtualbox-6.1
 sudo gpasswd -a ${USER} vboxusers
 
 # XMind
-google-chrome-stable https://www.xmind.net/download/
+google-chrome-stable https://www.xmind.net/zen/download/linux_deb/ &
+cd ~/Documents/Software/ ; sudo dpkg -i XMind-for-Linux-amd-64bit-*.deb
+sudo chown -R 1000:1000 /opt/XMind
 cd $(find -E /mnt XMind$ /)/resources
 # /opt/XMind/resources
 sudo mkdir -p temp_asar ; sudo npx asar extract app.asar temp_asar/
@@ -20,3 +27,15 @@ sudo mv app.asar app.asar.bak ; sudo npx asar pack temp_asar/ app.asar ; sudo rm
 wget -qO - https://typora.io/linux/public-key.asc | sudo apt-key add -
 echo "deb [arch=amd64] https://typora.io/linux ./" | sudo tee -a /etc/apt/sources.list.d/typora.list
 up ; sudo apt install typora
+
+# Postman
+google-chrome-stable https://dl.pstmn.io/download/latest/linux64 &
+cd ~/Documents/Software/
+sudo tar zxf Postman-linux-x86_64-*.tar.gz -C /opt/
+sudo chown -R 1000:1000 /opt/Postman
+
+# FreeFileSync
+google-chrome-stable https://freefilesync.org/download.php &
+tar zxf FreeFileSync_*_Linux.tar.gz ; rm $_
+./FreeFileSync_*_Install.run
+sudo chown -R 1000:1000 /opt/FreeFileSync

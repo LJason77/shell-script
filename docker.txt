@@ -1,4 +1,4 @@
-proxy=192.168.3.101
+proxy=192.168.3.102
 up
 
 sudo apt -y install linux-image-extra-virtual apt-transport-https ca-certificates curl software-properties-common
@@ -54,13 +54,14 @@ docker pull ubuntu:20.04
 cd ~/VHD/gitSou/docker-clash
 docker build --build-arg http_proxy="http://$proxy:8123" --build-arg https_proxy="http://$proxy:8123" -t clash .
 # cd /mnt/clash.yaml/
-cd 
+cd ~/Documents/clash.yaml/
 git pull
 # docker rm -f clash ; docker run -d --restart always --name clash -v /mnt/clash.yaml/clash.yaml:/root/.config/clash/config.yaml --network host clash
 docker rm -f clash ; docker run -d --restart always --name clash -v ~/Documents/clash.yaml/clash.yaml:/root/.config/clash/config.yaml --network host clash
 
-proxy=192.168.3.102
+proxy=192.168.3.101
 echo -e "[Service]\nEnvironment=\"https_proxy=http://$proxy:8123/\" \"http_proxy=http://$proxy:8123/\"" | sudo tee /etc/systemd/system/docker.service.d/http-proxy.conf
+echo -e "Acquire::http::proxy \"http://$proxy:8123/\";\nAcquire::https::Proxy \"http://$proxy:8123/\";" | sudo tee /etc/apt/apt.conf
 
 # Aria2
 # cd /mnt/Docker/docker-Src/docker-aria2-with-webui/
@@ -68,11 +69,11 @@ cd ~/VHD/gitSou/docker-aria2-with-webui
 git pull
 docker build --build-arg http_proxy="http://$proxy:8123" --build-arg https_proxy="http://$proxy:8123" -t aria2 .
 # docker rm -f aria2 ; docker run -d --name aria2 --restart always --network host -e SECRET=333544 -v /mnt/downloads:/data aria2
-docker rm -f aria2 ; docker run -d --restart always --name aria2 --network host -e SECRET=333544 -v ~/Downloads:/data aria2-with-webui
+docker rm -f aria2 ; docker run -d --restart always --name aria2 --network host -e SECRET=333544 -v ~/Downloads:/data aria2
 
 # qbittorrent
 docker pull linuxserver/qbittorrent
-docker rm -f qbittorrent ; docker run -d --name qbittorrent --restart always -e PUID=1000 -e PGID=1000 -e TZ=Asia/Shanghai -e UMASK=022 -e WEBUI_PORT=8080 --network host -v /mnt/Data/qbittorrent/config:/config -v /mnt/downloads/qbittorrent:/downloads linuxserver/qbittorrent
+docker rm -f qbittorrent ; docker run -d --name qbittorrent --restart always -e PUID=1000 -e PGID=1000 -e TZ=Asia/Shanghai -e UMASK=022 -e WEBUI_PORT=8080 --network host -v ~/Downloads/qbittorrent/config:/config -v ~/Downloads/qbittorrent:/downloads linuxserver/qbittorrent
 
 # ZeroNet
 # docker pull ljason/zeronet
@@ -87,7 +88,7 @@ docker rm -f zeronet ; docker run -d --name zeronet --restart always --network h
 exit
 
 # darkhttpd
-git clone --depth=1 https://github.com/emikulic/darkhttpd.git && cd darkhttpd
+cd ; git clone --depth=1 https://github.com/emikulic/darkhttpd.git && cd darkhttpd
 docker build --build-arg http_proxy="http://$proxy:8123" --build-arg https_proxy="http://$proxy:8123" -t darkhttpd .
 .. ; rm -rf darkhttpd
 

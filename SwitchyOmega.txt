@@ -1,6 +1,7 @@
 [SwitchyOmega Conditions]
 @with result
 
+*.linuxmint.com +http
 *.discourse-cdn.com +http
 *.wikimedia.org +http
 *.10musume.com +http
