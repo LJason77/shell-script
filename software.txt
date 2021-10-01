@@ -39,3 +39,12 @@ google-chrome-stable https://freefilesync.org/download.php &
 tar zxf FreeFileSync_*_Linux.tar.gz ; rm $_
 ./FreeFileSync_*_Install.run
 sudo chown -R 1000:1000 /opt/FreeFileSync
+
+# Office
+google-chrome-stable https://www.libreoffice.org/download/download/?type=deb-x86_64&lang=zh-CN &
+tar zxf LibreOffice_*_Linux_x86-64_deb.tar.gz && rm $_
+cd LibreOffice_*_Linux_x86-64_deb/DEBS/ && sudo dpkg -i *.deb && cd ../.. && rm -rf LibreOffice_*_Linux_x86-64_deb
+tar zxf LibreOffice_*_Linux_x86-64_deb_langpack_zh-CN.tar.gz && rm $_
+cd LibreOffice_*_Linux_x86-64_deb_langpack_zh-CN/DEBS/ && sudo dpkg -i *.deb && cd ../.. && rm -rf LibreOffice_*_Linux_x86-64_deb_langpack_zh-CN
+tar zxf LibreOffice_*_Linux_x86-64_deb_helppack_zh-CN.tar.gz && rm $_
+cd LibreOffice_*_Linux_x86-64_deb_helppack_zh-CN/DEBS/ && sudo dpkg -i *.deb && cd ../.. && rm -rf LibreOffice_*_Linux_x86-64_deb_helppack_zh-CN

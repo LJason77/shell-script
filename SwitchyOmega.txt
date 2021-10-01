@@ -1,6 +1,8 @@
 [SwitchyOmega Conditions]
 @with result
 
+golang.org +http
+*.libreoffice.org +http
 *.linuxmint.com +http
 *.discourse-cdn.com +http
 *.wikimedia.org +http

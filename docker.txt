@@ -1,4 +1,4 @@
-proxy=192.168.3.102
+proxy=192.168.3.101
 up
 
 sudo apt -y install linux-image-extra-virtual apt-transport-https ca-certificates curl software-properties-common
@@ -47,6 +47,7 @@ docker pull golang:alpine
 docker pull linuxserver/qbittorrent
 docker pull rust:alpine
 docker pull ubuntu:20.04
+docker pull mongo
 
 # clash
 # git@github.com:LJason77/docker-clash.git
@@ -59,7 +60,7 @@ git pull
 # docker rm -f clash ; docker run -d --restart always --name clash -v /mnt/clash.yaml/clash.yaml:/root/.config/clash/config.yaml --network host clash
 docker rm -f clash ; docker run -d --restart always --name clash -v ~/Documents/clash.yaml/clash.yaml:/root/.config/clash/config.yaml --network host clash
 
-proxy=192.168.3.101
+proxy=192.168.3.102
 echo -e "[Service]\nEnvironment=\"https_proxy=http://$proxy:8123/\" \"http_proxy=http://$proxy:8123/\"" | sudo tee /etc/systemd/system/docker.service.d/http-proxy.conf
 echo -e "Acquire::http::proxy \"http://$proxy:8123/\";\nAcquire::https::Proxy \"http://$proxy:8123/\";" | sudo tee /etc/apt/apt.conf
 
@@ -98,7 +99,17 @@ screen -S rsshub
 proxy=192.168.3.102
 cd /mnt/Docker/docker-Src/docker-rsshub
 docker build --no-cache --build-arg http_proxy="http://$proxy:8123" --build-arg https_proxy="http://$proxy:8123" -t rsshub .
-docker rm -f rsshub ; docker run -d --restart always --name rsshub --network host -e REQUEST_RETRY=10 -e DEBUG_INFO=true -e EMAIL_CONFIG_ljason.ljason.cn="password=13035751097lL.&host=hwpop.exmail.qq.com&port=993" -e CACHE_CONTENT_EXPIRE=180 -e ACCESS_KEY=333544 -e NODE_TLS_REJECT_UNAUTHORIZED=0 -e PROXY_URI=http://$proxy:8123 -e BILIBILI_COOKIE_4744634=a0f6d132%2C1640459640%2Cc3d5b%2A61 rsshub
+# https://api.vc.bilibili.com/dynamic_svr/v1/dynamic_svr/dynamic_new?uid=0&type=8
+docker exec -it rsshub env
+```ini
+BILIBILI_COOKIE_4744634=
+PASSWORD=
+ACCESS_KEY=
+TWITTER_CONSUMER_KEY=
+TWITTER_CONSUMER_SECRET=
+TWITTER_TOKEN_LJason77=
+```
+docker rm -f rsshub ; docker run -d --restart always --name rsshub -p 80:1200 -e REQUEST_RETRY=10 -e DEBUG_INFO=true -e EMAIL_CONFIG_ljason.ljason.cn="password=$PASSWORD&host=hwpop.exmail.qq.com&port=993" -e CACHE_CONTENT_EXPIRE=180 -e ACCESS_KEY=$ACCESS_KEY -e NODE_TLS_REJECT_UNAUTHORIZED=0 -e PROXY_URI=http://$proxy:8123 -e BILIBILI_COOKIE_4744634=$BILIBILI_COOKIE_4744634 -e TWITTER_CONSUMER_KEY=$TWITTER_CONSUMER_KEY -e TWITTER_CONSUMER_SECRET=$TWITTER_CONSUMER_SECRET -e TWITTER_TOKEN_LJason77=$TWITTER_TOKEN_LJason77 rsshub
 exit
 
 # flowerss

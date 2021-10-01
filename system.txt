@@ -139,9 +139,8 @@ gsettings set org.gnome.shell.extensions.dash-to-dock click-action 'minimize'
 gsettings set org.gnome.desktop.interface show-battery-percentage true
 gsettings set org.gnome.desktop.session idle-delay 3600
 
-# 安装 Python 3.9
+# Python 3.9 https://www.python.org/downloads/source/
 screen -S py
-## https://www.python.org/downloads/source/
 version=3.9.7
 fq
 wget https://www.python.org/ftp/python/$version/Python-$version.tar.xz
@@ -183,7 +182,7 @@ sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-key C99B11DEB97541F0
 sudo apt-add-repository https://cli.github.com/packages
 up ; sudo apt install gh
 
-# node
+# node https://nodejs.org/en/download/
 version=14.17.6
 fq
 wget https://nodejs.org/dist/v$version/node-v$version.tar.gz
@@ -194,3 +193,8 @@ node -v
 .. ; rm -rf node-v$version*
 sudo chown -R $(whoami):$(whoami) $(npm config get prefix)/{lib/node_modules,bin,share}
 npm install npm -g
+
+# go https://golang.org/dl/
+version=1.17.1
+wget https://golang.org/dl/go$version.linux-amd64.tar.gz
+sudo tar zxf go$version.linux-amd64.tar.gz -C /usr/
