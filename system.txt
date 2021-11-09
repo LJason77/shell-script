@@ -9,6 +9,8 @@ proxy=192.168.3.102
 export http_proxy=http://$proxy:8123/ && export https_proxy=http://$proxy:8123/ 
 echo -e "Acquire::http::proxy \"http://$proxy:8123/\";\nAcquire::https::Proxy \"http://$proxy:8123/\";" | sudo tee /etc/apt/apt.conf
 
+alias up='sudo apt -yqq update && sudo apt -y upgrade && sudo apt -y dist-upgrade && sudo apt -y autoremove --purge && sudo apt autoclean && sudo apt clean'
+
 sudo apt purge -y firefox* hplip* printer-driver* gedit* vim-common && sudo apt -y autoremove --purge
 sudo apt -y install --no-install-recommends vim
 sudo rm -rf /usr/share/hplip /usr/share/fonts/truetype/liberation2 /usr/share/fonts/truetype/openoffice
@@ -124,8 +126,7 @@ google-chrome-stable --proxy-server="socks5://$proxy:1080"
 google-chrome-stable https://extensions.gnome.org/extension/104/netspeed/
 
 # 时间
-sudo ntpdate ntp5.aliyun.com
-sudo hwclock --localtime --systohc
+sudo ntpdate ntp5.aliyun.com && sudo hwclock --localtime --systohc
 
 # 添加手机到 udev
 echo 'SUBSYSTEM=="usb", ATTRS{idVendor}=="18d1",ATTRS{idProduct}=="4ee0",MODE="0666"' | sudo tee /etc/udev/rules.d/50-pixel.rules
@@ -147,9 +148,9 @@ wget https://www.python.org/ftp/python/$version/Python-$version.tar.xz
 tar Jxf Python-$version.tar.xz ; cd Python-$version/
 sudo apt install -y libsqlite3-dev libssl-dev libffi-dev libbz2-dev zlib1g-dev
 ./configure --enable-loadable-sqlite-extensions --enable-optimizations 
-make -j16 ; sudo make install
+make -j16 ; sudo make install -j16
 python3 -V
-python3 -m pip install --upgrade pip
+sudo python3 -m pip install --upgrade pip
 cd .. ; sudo rm -rf Python-$version*
 exit
 
@@ -164,12 +165,9 @@ rustup completions bash cargo
 source $(rustc --print sysroot)/etc/bash_completion.d/cargo
 
 # 现代 ls
-cargo install exa
+cargo install exa bat git-delta czkawka_cli drill fcp fd-find du-dust fnm
 mkdir -p ~/.local/share/bash-completion/completions
 curl -L https://raw.githubusercontent.com/ogham/exa/master/completions/bash/exa > ~/.local/share/bash-completion/completions/exa
-
-# 现代 cat
-cargo install bat git-delta czkawka_cli drill fcp fd-find du-dust
 
 # 命令行基准测试
 cargo install hyperfine
@@ -183,18 +181,11 @@ sudo apt-add-repository https://cli.github.com/packages
 up ; sudo apt install gh
 
 # node https://nodejs.org/en/download/
-version=14.17.6
-fq
-wget https://nodejs.org/dist/v$version/node-v$version.tar.gz
-tar zxf node-v$version.tar.gz ; cd node-v$version
-./configure
-make -j16 ; sudo make install
-node -v
-.. ; rm -rf node-v$version*
-sudo chown -R $(whoami):$(whoami) $(npm config get prefix)/{lib/node_modules,bin,share}
+version=16.13.0
+fnm install v$version
 npm install npm -g
 
 # go https://golang.org/dl/
-version=1.17.1
+version=1.17.3
 wget https://golang.org/dl/go$version.linux-amd64.tar.gz
 sudo tar zxf go$version.linux-amd64.tar.gz -C /usr/

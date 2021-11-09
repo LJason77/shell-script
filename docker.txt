@@ -1,4 +1,5 @@
 proxy=192.168.3.101
+alias up='sudo apt -yqq update && sudo apt -y upgrade && sudo apt -y dist-upgrade && sudo apt -y autoremove --purge && sudo apt autoclean && sudo apt clean'
 up
 
 sudo apt -y install linux-image-extra-virtual apt-transport-https ca-certificates curl software-properties-common
@@ -8,7 +9,7 @@ echo "deb [arch=amd64] http://download.docker.com/linux/ubuntu $(lsb_release -cs
 
 up ; sudo apt -y install docker-ce
 
-sudo vi /etc/docker/daemon.json
+sudo mkdir -p /etc/docker && sudo vi $_/daemon.json
 ```json
 {
     "max-concurrent-downloads": 10,
@@ -23,6 +24,7 @@ sudo vi /etc/docker/daemon.json
 
 # 安装 docker-compose
 pip3 install docker-compose
+mkdir -p ~/.local/share/bash-completion/completions
 curl -L https://raw.githubusercontent.com/docker/compose/master/contrib/completion/bash/docker-compose > ~/.local/share/bash-completion/completions/docker-compose 
 
 # 代理

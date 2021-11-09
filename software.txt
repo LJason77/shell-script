@@ -19,9 +19,9 @@ cd ~/Documents/Software/ ; sudo dpkg -i XMind-for-Linux-amd-64bit-*.deb
 sudo chown -R 1000:1000 /opt/XMind
 cd $(find -E /mnt XMind$ /)/resources
 # /opt/XMind/resources
-sudo mkdir -p temp_asar ; sudo npx asar extract app.asar temp_asar/
-sudo sed -i 's/{TRIAL:"trial",VALID:"valid",EXPIRED:"expired"}/{TRIAL:"trial",VALID:"trial",EXPIRED:"trial"}/g' "temp_asar/main/main.js" "temp_asar/renderer/common.js"
-sudo mv app.asar app.asar.bak ; sudo npx asar pack temp_asar/ app.asar ; sudo rm -rf temp_asar/
+mkdir -p temp_asar ; npx asar extract app.asar temp_asar/
+sed -i 's/{TRIAL:"trial",VALID:"valid",EXPIRED:"expired"}/{TRIAL:"trial",VALID:"trial",EXPIRED:"trial"}/g' "temp_asar/main/main.js" "temp_asar/renderer/common.js"
+mv app.asar app.asar.bak ; npx asar pack temp_asar/ app.asar ; rm -rf temp_asar/
 
 # typora
 wget -qO - https://typora.io/linux/public-key.asc | sudo apt-key add -
@@ -41,7 +41,7 @@ tar zxf FreeFileSync_*_Linux.tar.gz ; rm $_
 sudo chown -R 1000:1000 /opt/FreeFileSync
 
 # Office
-google-chrome-stable https://www.libreoffice.org/download/download/?type=deb-x86_64&lang=zh-CN &
+google-chrome-stable "https://www.libreoffice.org/download/download/?type=deb-x86_64&lang=zh-CN" &
 tar zxf LibreOffice_*_Linux_x86-64_deb.tar.gz && rm $_
 cd LibreOffice_*_Linux_x86-64_deb/DEBS/ && sudo dpkg -i *.deb && cd ../.. && rm -rf LibreOffice_*_Linux_x86-64_deb
 tar zxf LibreOffice_*_Linux_x86-64_deb_langpack_zh-CN.tar.gz && rm $_

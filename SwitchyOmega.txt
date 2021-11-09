@@ -1,6 +1,10 @@
 [SwitchyOmega Conditions]
 @with result
 
+*.raspberrypi.com +http
+*.dbeaver.com +http
+gofrp.org +http
+rustconf.com +http
 golang.org +http
 *.libreoffice.org +http
 *.linuxmint.com +http
@@ -123,6 +127,7 @@ golang.org +http
 *.gitbook.io +http
 *.gitbooks.io +http
 *.github.com +http
+*.github.blog +http
 *.github.io +http
 *.githubapp.com +http
 *.githubassets.com +http
@@ -256,6 +261,7 @@ golang.org +http
 *.packtpub.com +http
 *.patreon.com +http
 *.paypalobjects.com +http
+*.paypal.com +http
 *.petametrics.com +http
 *.phncdn.com +http
 *.pinimg.com +http
