@@ -84,7 +84,6 @@ ithome.com###fls
 ithome.com###ft
 ithome.com###hd
 ithome.com###hl-toutiao
-ithome.com###ifcomment
 ithome.com###lns
 ithome.com###nav
 ithome.com###side_func

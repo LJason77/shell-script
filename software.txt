@@ -1,6 +1,9 @@
+# 修复 apt 自动补全
+sudo apt install bash-completion --reinstall
+
 # Telegram
 cd ~/Documents/Software/
-google-chrome-stable https://telegram.org/dl/desktop/linux
+google-chrome-stable https://telegram.org/dl/desktop/linux &
 sudo tar Jxf tsetup.*.tar.xz -C /opt/
 
 # 虚拟机

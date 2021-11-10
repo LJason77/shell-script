@@ -5,6 +5,7 @@
 *.dbeaver.com +http
 gofrp.org +http
 rustconf.com +http
+github.blog +http
 golang.org +http
 *.libreoffice.org +http
 *.linuxmint.com +http

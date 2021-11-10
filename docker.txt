@@ -1,4 +1,4 @@
-proxy=192.168.3.101
+proxy=192.168.3.102
 alias up='sudo apt -yqq update && sudo apt -y upgrade && sudo apt -y dist-upgrade && sudo apt -y autoremove --purge && sudo apt autoclean && sudo apt clean'
 up
 
@@ -62,7 +62,7 @@ git pull
 # docker rm -f clash ; docker run -d --restart always --name clash -v /mnt/clash.yaml/clash.yaml:/root/.config/clash/config.yaml --network host clash
 docker rm -f clash ; docker run -d --restart always --name clash -v ~/Documents/clash.yaml/clash.yaml:/root/.config/clash/config.yaml --network host clash
 
-proxy=192.168.3.102
+proxy=192.168.3.101
 echo -e "[Service]\nEnvironment=\"https_proxy=http://$proxy:8123/\" \"http_proxy=http://$proxy:8123/\"" | sudo tee /etc/systemd/system/docker.service.d/http-proxy.conf
 echo -e "Acquire::http::proxy \"http://$proxy:8123/\";\nAcquire::https::Proxy \"http://$proxy:8123/\";" | sudo tee /etc/apt/apt.conf
 
@@ -76,7 +76,7 @@ docker rm -f aria2 ; docker run -d --restart always --name aria2 --network host 
 
 # qbittorrent
 docker pull linuxserver/qbittorrent
-docker rm -f qbittorrent ; docker run -d --name qbittorrent --restart always -e PUID=1000 -e PGID=1000 -e TZ=Asia/Shanghai -e UMASK=022 -e WEBUI_PORT=8080 --network host -v ~/Downloads/qbittorrent/config:/config -v ~/Downloads/qbittorrent:/downloads linuxserver/qbittorrent
+docker rm -f qbittorrent ; docker run -d --name qbittorrent --restart always -e PUID=1000 -e PGID=1000 -e TZ=Asia/Shanghai -e UMASK=022 -e WEBUI_PORT=8080 --network host -v /mnt/Data/qbittorrent/config:/config -v /mnt/downloads/qbittorrent:/downloads linuxserver/qbittorrent
 
 # ZeroNet
 # docker pull ljason/zeronet
@@ -122,3 +122,14 @@ docker rm -f flowerss ; docker run --restart always --name flowerss -d --network
 # WarframeBot
 cd /mnt/Github/WarframeBot ; git pull
 docker build --build-arg http_proxy="http://$proxy:8123" --build-arg https_proxy="http://$proxy:8123" -t warframe .
+
+# mongo
+# 树莓派不支持 5.0,需要安装 4.4.9
+docker pull mongo:4.4.9
+docker run -d --name mongo --restart always -e MONGO_INITDB_ROOT_USERNAME=mongo -e MONGO_INITDB_ROOT_PASSWORD=mongo -v /mnt/Data/mongo:/data/db -p 27017:27017 mongo:4.4.9 --wiredTigerCollectionBlockCompressor zlib
+docker exec -it mongo mongo --username mongo --password mongo --authenticationDatabase admin
+```mongo
+use my_db
+# 添加用户
+db.createUser({user: 'user_name',pwd: 'password',roles: [{ role: 'dbOwner', db: 'my_db' }]})
+```
