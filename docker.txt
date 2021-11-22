@@ -35,8 +35,8 @@ sudo gpasswd -a ${USER} docker
 
 # 移动 Docker 镜像
 sudo systemctl daemon-reload
-sudo systemctl stop docker.socket
-sudo systemctl stop docker.service
+sudo systemctl restart docker.socket
+sudo systemctl restart docker.service
 sudo mv /var/lib/docker /mnt/Docker/.dockerImages
 # 链接镜像
 #sudo rm -rf /var/lib/docker
@@ -133,3 +133,8 @@ use my_db
 # 添加用户
 db.createUser({user: 'user_name',pwd: 'password',roles: [{ role: 'dbOwner', db: 'my_db' }]})
 ```
+
+# 阿里云盘
+docker pull messense/aliyundrive-webdav
+REFRESH_TOKEN=
+docker run -d --name aliyundrive-webdav --restart always -p 7777:8080 -v ~/Downloads/aliyundrive-webdav/:/etc/aliyundrive-webdav/ -e WEBDAV_AUTH_USER=admin -e WEBDAV_AUTH_PASSWORD=admin -e REFRESH_TOKEN="$REFRESH_TOKEN" messense/aliyundrive-webdav
