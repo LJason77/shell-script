@@ -141,7 +141,7 @@ gsettings set org.gnome.shell.extensions.dash-to-dock click-action 'minimize'
 gsettings set org.gnome.desktop.interface show-battery-percentage true
 gsettings set org.gnome.desktop.session idle-delay 3600
 
-# Python 3.10 https://www.python.org/downloads/source/
+# Python 3.9 https://www.python.org/downloads/source/
 screen -S py
 version=3.9.9
 fq
@@ -154,6 +154,8 @@ python3 -V
 sudo python3 -m pip install --upgrade pip
 cd .. ; sudo rm -rf Python-$version*
 exit
+# bilili
+pip3 install bilili
 
 # 模糊搜索
 git clone --depth=1 https://github.com/junegunn/fzf.git ~/.fzf
