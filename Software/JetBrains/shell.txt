@@ -1,5 +1,5 @@
 cd ~/Documents/Software
-google-chrome-stable https://www.oracle.com/java/technologies/javase-downloads.html
+google-chrome-stable https://www.oracle.com/java/technologies/downloads/ &
 sudo tar Jxf jdk-*.tar.xz -C /usr/
 
 cd JetBrains

@@ -1,10 +1,12 @@
-# 修复 apt 自动补全
-sudo apt install bash-completion --reinstall
-
 # Telegram
 cd ~/Documents/Software/
 google-chrome-stable https://telegram.org/dl/desktop/linux &
 sudo tar Jxf tsetup.*.tar.xz -C /opt/
+
+# Discord
+google-chrome-stable "https://discord.com/api/download?platform=linux&format=tar.gz" &
+sudo tar zxf discord-*.tar.gz -C /opt/
+sudo chown -R 1000:1000 /opt/Discord
 
 # 虚拟机
 echo "deb [arch=amd64] http://download.virtualbox.org/virtualbox/debian $(lsb_release -cs) contrib" | sudo tee -a /etc/apt/sources.list.d/virtualbox.list
@@ -13,6 +15,7 @@ wget -q https://www.virtualbox.org/download/oracle_vbox.asc -O- | sudo apt-key a
 up
 virtualbox=$(curl http://download.virtualbox.org/virtualbox/LATEST.TXT)
 cd /mnt/Executable/ ; wget https://download.virtualbox.org/virtualbox/$virtualbox/Oracle_VM_VirtualBox_Extension_Pack-$virtualbox.vbox-extpack
+sudo apt install bash-completion --reinstall
 sudo apt -y install virtualbox-6.1
 sudo gpasswd -a ${USER} vboxusers
 
@@ -20,8 +23,7 @@ sudo gpasswd -a ${USER} vboxusers
 google-chrome-stable https://www.xmind.net/zen/download/linux_deb/ &
 cd ~/Documents/Software/ ; sudo dpkg -i XMind-for-Linux-amd-64bit-*.deb
 sudo chown -R 1000:1000 /opt/XMind
-cd $(find -E /mnt XMind$ /)/resources
-# /opt/XMind/resources
+cd /opt/XMind/resources
 mkdir -p temp_asar ; npx asar extract app.asar temp_asar/
 sed -i 's/{TRIAL:"trial",VALID:"valid",EXPIRED:"expired"}/{TRIAL:"trial",VALID:"trial",EXPIRED:"trial"}/g' "temp_asar/main/main.js" "temp_asar/renderer/common.js"
 mv app.asar app.asar.bak ; npx asar pack temp_asar/ app.asar ; rm -rf temp_asar/

@@ -1,6 +1,7 @@
 [SwitchyOmega Conditions]
 @with result
 
+*.go.dev +http
 *.raspberrypi.com +http
 *.dbeaver.com +http
 gofrp.org +http

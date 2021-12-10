@@ -3,16 +3,16 @@ alias up='sudo apt -yqq update && sudo apt -y upgrade && sudo apt -y dist-upgrad
 up
 
 sudo apt -y install linux-image-extra-virtual apt-transport-https ca-certificates curl software-properties-common
-curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+curl -fsSL "https://download.docker.com/linux/$(. /etc/os-release; echo "$ID")/gpg" | sudo apt-key add -
 sudo apt-key fingerprint 0EBFCD88
-echo "deb [arch=amd64] http://download.docker.com/linux/ubuntu $(lsb_release -cs) stable edge" | sudo tee -a /etc/apt/sources.list.d/docker.list
+echo -e "deb [arch=$(dpkg --print-architecture)] http://download.docker.com/linux/$(. /etc/os-release; echo "$ID") $(lsb_release -cs) stable edge" | sudo tee -a /etc/apt/sources.list.d/docker.list
 
-up ; sudo apt -y install docker-ce
+up ; sudo apt -yqq install docker-ce
 
 sudo mkdir -p /etc/docker && sudo vi $_/daemon.json
 ```json
 {
-    "max-concurrent-downloads": 10,
+    "max-concurrent-downloads": 20,
     "max-concurrent-uploads": 20,
     "log-level": "warn",
     "log-opts": {
@@ -55,12 +55,12 @@ docker pull mongo
 # git@github.com:LJason77/docker-clash.git
 # cd /mnt/Docker/docker-Src/docker-clash
 cd ~/VHD/gitSou/docker-clash
-docker build --build-arg http_proxy="http://$proxy:8123" --build-arg https_proxy="http://$proxy:8123" -t clash .
+sudo docker build --build-arg http_proxy="http://$proxy:8123" --build-arg https_proxy="http://$proxy:8123" -t clash .
 # cd /mnt/clash.yaml/
 cd ~/Documents/clash.yaml/
 git pull
 # docker rm -f clash ; docker run -d --restart always --name clash -v /mnt/clash.yaml/clash.yaml:/root/.config/clash/config.yaml --network host clash
-docker rm -f clash ; docker run -d --restart always --name clash -v ~/Documents/clash.yaml/clash.yaml:/root/.config/clash/config.yaml --network host clash
+sudo docker rm -f clash ; sudo docker run -d --restart always --name clash -v ~/Documents/clash.yaml/clash.yaml:/root/.config/clash/config.yaml --network host clash
 
 proxy=192.168.3.101
 echo -e "[Service]\nEnvironment=\"https_proxy=http://$proxy:8123/\" \"http_proxy=http://$proxy:8123/\"" | sudo tee /etc/systemd/system/docker.service.d/http-proxy.conf
@@ -70,9 +70,9 @@ echo -e "Acquire::http::proxy \"http://$proxy:8123/\";\nAcquire::https::Proxy \"
 # cd /mnt/Docker/docker-Src/docker-aria2-with-webui/
 cd ~/VHD/gitSou/docker-aria2-with-webui
 git pull
-docker build --build-arg http_proxy="http://$proxy:8123" --build-arg https_proxy="http://$proxy:8123" -t aria2 .
+sudo docker build --build-arg http_proxy="http://$proxy:8123" --build-arg https_proxy="http://$proxy:8123" -t aria2 .
 # docker rm -f aria2 ; docker run -d --name aria2 --restart always --network host -e SECRET=333544 -v /mnt/downloads:/data aria2
-docker rm -f aria2 ; docker run -d --restart always --name aria2 --network host -e SECRET=333544 -v ~/Downloads:/data aria2
+sudo docker rm -f aria2 ; sudo docker run -d --restart always --name aria2 --network host -e SECRET=333544 -v ~/Downloads:/data aria2
 
 # qbittorrent
 docker pull linuxserver/qbittorrent
@@ -105,13 +105,12 @@ docker build --no-cache --build-arg http_proxy="http://$proxy:8123" --build-arg 
 docker exec -it rsshub env
 ```ini
 BILIBILI_COOKIE_4744634=
-PASSWORD=
 ACCESS_KEY=
 TWITTER_CONSUMER_KEY=
 TWITTER_CONSUMER_SECRET=
 TWITTER_TOKEN_LJason77=
 ```
-docker rm -f rsshub ; docker run -d --restart always --name rsshub -p 80:1200 -e REQUEST_RETRY=10 -e DEBUG_INFO=true -e EMAIL_CONFIG_ljason.ljason.cn="password=$PASSWORD&host=hwpop.exmail.qq.com&port=993" -e CACHE_CONTENT_EXPIRE=180 -e ACCESS_KEY=$ACCESS_KEY -e NODE_TLS_REJECT_UNAUTHORIZED=0 -e PROXY_URI=http://$proxy:8123 -e BILIBILI_COOKIE_4744634=$BILIBILI_COOKIE_4744634 -e TWITTER_CONSUMER_KEY=$TWITTER_CONSUMER_KEY -e TWITTER_CONSUMER_SECRET=$TWITTER_CONSUMER_SECRET -e TWITTER_TOKEN_LJason77=$TWITTER_TOKEN_LJason77 rsshub
+docker rm -f rsshub ; docker run -d --restart always --name rsshub -p 80:1200 -e REQUEST_RETRY=10 -e DEBUG_INFO=true -e CACHE_CONTENT_EXPIRE=180 -e ACCESS_KEY=$ACCESS_KEY -e NODE_TLS_REJECT_UNAUTHORIZED=0 -e PROXY_URI=http://$proxy:8123 -e BILIBILI_COOKIE_4744634=$BILIBILI_COOKIE_4744634 -e TWITTER_CONSUMER_KEY=$TWITTER_CONSUMER_KEY -e TWITTER_CONSUMER_SECRET=$TWITTER_CONSUMER_SECRET -e TWITTER_TOKEN_LJason77=$TWITTER_TOKEN_LJason77 rsshub
 exit
 
 # flowerss
@@ -124,9 +123,9 @@ cd /mnt/Github/WarframeBot ; git pull
 docker build --build-arg http_proxy="http://$proxy:8123" --build-arg https_proxy="http://$proxy:8123" -t warframe .
 
 # mongo
-# 树莓派不支持 5.0,需要安装 4.4.9
-docker pull mongo:4.4.9
-docker run -d --name mongo --restart always -e MONGO_INITDB_ROOT_USERNAME=mongo -e MONGO_INITDB_ROOT_PASSWORD=mongo -v /mnt/Data/mongo:/data/db -p 27017:27017 mongo:4.4.9 --wiredTigerCollectionBlockCompressor zlib
+# 树莓派不支持 5.0,需要安装 4.4
+docker pull mongo:4.4
+docker run -d --name mongo --restart always -e MONGO_INITDB_ROOT_USERNAME=mongo -e MONGO_INITDB_ROOT_PASSWORD=mongo -v /mnt/Data/mongo:/data/db -p 27017:27017 mongo:4.4 --wiredTigerCollectionBlockCompressor zlib
 docker exec -it mongo mongo --username mongo --password mongo --authenticationDatabase admin
 ```mongo
 use my_db

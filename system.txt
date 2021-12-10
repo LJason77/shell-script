@@ -15,6 +15,11 @@ sudo apt purge -y firefox* hplip* printer-driver* gedit* vim-common && sudo apt 
 sudo apt -y install --no-install-recommends vim
 sudo rm -rf /usr/share/hplip /usr/share/fonts/truetype/liberation2 /usr/share/fonts/truetype/openoffice
 
+# 调整系统
+sudo vi /etc/systemd/system.conf
+sudo vi /etc/default/grub
+# GRUB_DISABLE_OS_PROBER=false
+
 # 修复 apt 自动补全
 sudo apt install bash-completion --reinstall
 
@@ -50,7 +55,7 @@ WantedBy=multi-user.target
 # 系统参数
 cat /proc/sys/vm/swappiness
 sudo sysctl -a | grep vm.swappiness
-echo "vm.swappiness = 10" | sudo tee -a /etc/sysctl.conf
+echo "vm.swappiness = 5" | sudo tee -a /etc/sysctl.conf
 sudo sysctl -a | grep net.core.somaxconn
 echo "net.core.somaxconn = 4096" | sudo tee -a /etc/sysctl.conf
 sudo sysctl -a | grep kernel.shmmax
@@ -76,12 +81,16 @@ echo "/dev/sda1 /mnt ntfs-3g uid=ljason,gid=ljason,silent,locale=zh_CN.utf8 0 0"
 sudo umount /dev/sda1 ; sudo mount /dev/sda1 /mnt
 mkdir ~/VHD
 sudo mount /mnt/Linux/VHD.img ~/VHD
+mkdir ~/Android
+sudo mount /mnt/Linux/Android.img ~/Android
 echo "/mnt/Linux/VHD.img /home/ljason/VHD ext4 defaults 0 0" | sudo tee -a /etc/fstab
+echo "/mnt/Linux/Android.img /home/ljason/Android ext4 defaults 0 0" | sudo tee -a /etc/fstab
 cd ~/VHD/gitSou/dotfiles ; ./install.sh ; cd
 rm -rf Music && ln -s /mnt/System/Music .
 rm -rf Pictures && ln -s /mnt/System/Pictures .
 rm -rf Videos && ln -s /mnt/System/Videos .
 rm -rf Downloads && ln -s /mnt/System/Downloads .
+rm -rf Documents && ln -s /mnt/System/Documents .
 cp /mnt/Sync/Server/Desktop/ljason/ssh/id_ed25519 .ssh/
 ln -s /mnt/VirtualBox\ VMs/Linux VirtualBox\ VMs
 chmod 600 .ssh/id_ed25519
@@ -89,8 +98,8 @@ chmod 600 .ssh/id_ed25519
 # 挂载硬盘（pi）
 sudo fdisk -l
 sudo umount /dev/sda1 ; sudo mount /dev/sda1 /mnt ; ls -la /mnt/
-ls -l  /dev/disk/by-uuid/ | grep sda1 | awk '{print $9}'
-echo "UUID=$(ls -l  /dev/disk/by-uuid/ | grep sda1 | awk '{print $9}') /mnt ext4 defaults 0 0" | sudo tee -a /etc/fstab ; cat /etc/fstab
+ls -l  /dev/disk/by-uuid/ | grep sdb1 | awk '{print $9}'
+echo "UUID=$(ls -l  /dev/disk/by-uuid/ | grep sdb1 | awk '{print $9}') /mnt ext4 defaults 0 0" | sudo tee -a /etc/fstab ; cat /etc/fstab
 
 # 隐藏挂载硬盘
 gsettings set org.gnome.shell.extensions.dash-to-dock show-mounts false
@@ -122,15 +131,16 @@ curl -sSf "https://packagecloud.io/install/repositories/github/git-lfs/config_fi
 wget -q https://packagecloud.io/github/git-lfs/gpgkey -O- | sudo apt-key add -
 up && sudo apt -y install git-lfs
 
-google-chrome-stable --proxy-server="socks5://$proxy:1080"
+google-chrome-stable --proxy-server="socks5://$proxy:1080" &
 # GNOME 扩展
-google-chrome-stable https://extensions.gnome.org/extension/104/netspeed/
+google-chrome-stable https://extensions.gnome.org/extension/104/netspeed/ &
 
 # 时间
 sudo ntpdate ntp5.aliyun.com && sudo hwclock --localtime --systohc
 
 # 添加手机到 udev
-echo 'SUBSYSTEM=="usb", ATTRS{idVendor}=="18d1",ATTRS{idProduct}=="4ee0",MODE="0666"' | sudo tee /etc/udev/rules.d/50-pixel.rules
+echo 'SUBSYSTEM=="usb", ATTRS{idVendor}=="18d1",ATTRS{idProduct}=="4ee7",MODE="0666"' | sudo tee /etc/udev/rules.d/50-pixel.rules
+echo 'SUBSYSTEM=="usb", ATTRS{idVendor}=="18d1",ATTRS{idProduct}=="4ee0",MODE="0666"' | sudo tee /etc/udev/rules.d/51-pixel.rules
 echo 'SUBSYSTEM=="usb", ATTRS{idVendor}=="18d1",ATTRS{idProduct}=="4ee7",MODE="0666"' | sudo tee /etc/udev/rules.d/50-nexus.rules
 echo 'SUBSYSTEM=="usb", ATTRS{idVendor}=="18d1",ATTRS{idProduct}=="d00d",MODE="0666"' | sudo tee /etc/udev/rules.d/50-huawei.rules
 echo 'SUBSYSTEM=="usb", ATTRS{idVendor}=="045e",ATTRS{idProduct}=="02fe",MODE="0666"' | sudo tee /etc/udev/rules.d/50-xbox.rules
@@ -155,7 +165,7 @@ sudo python3 -m pip install --upgrade pip
 cd .. ; sudo rm -rf Python-$version*
 exit
 # bilili
-pip3 install bilili
+pip3 install bilili youtube-dl
 
 # 模糊搜索
 git clone --depth=1 https://github.com/junegunn/fzf.git ~/.fzf
@@ -184,12 +194,12 @@ sudo apt-add-repository https://cli.github.com/packages
 up ; sudo apt install gh
 
 # node https://nodejs.org/en/download/
-version=16.13.0
+version=16.13.1
 fnm install v$version
 npm install npm -g
 
 # go https://golang.org/dl/
-version=1.17.3
+version=1.17.5
 wget https://golang.org/dl/go$version.linux-amd64.tar.gz
 sudo tar zxf go$version.linux-amd64.tar.gz -C /usr/
 rm -rf go$version.linux-amd64.tar.gz
