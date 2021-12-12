@@ -1,15 +1,12 @@
 proxy=192.168.3.102
-alias up='sudo apt -yqq update && sudo apt -y upgrade && sudo apt -y dist-upgrade && sudo apt -y autoremove --purge && sudo apt autoclean && sudo apt clean'
+alias up='sudo dnf -y update && sudo dnf -y upgrade && sudo dnf -y autoremove && sudo dnf -q clean all'
+
+sudo dnf -y install dnf-plugins-core
+sudo dnf config-manager --add-repo https://download.docker.com/linux/fedora/docker-ce.repo
 up
+sudo dnf -y install docker-ce docker-ce-cli containerd.io
 
-sudo apt -y install linux-image-extra-virtual apt-transport-https ca-certificates curl software-properties-common
-curl -fsSL "https://download.docker.com/linux/$(. /etc/os-release; echo "$ID")/gpg" | sudo apt-key add -
-sudo apt-key fingerprint 0EBFCD88
-echo -e "deb [arch=$(dpkg --print-architecture)] http://download.docker.com/linux/$(. /etc/os-release; echo "$ID") $(lsb_release -cs) stable edge" | sudo tee -a /etc/apt/sources.list.d/docker.list
-
-up ; sudo apt -yqq install docker-ce
-
-sudo mkdir -p /etc/docker && sudo vi $_/daemon.json
+sudo mkdir -p /etc/docker && sudo vim $_/daemon.json
 ```json
 {
     "max-concurrent-downloads": 20,
@@ -32,6 +29,7 @@ sudo mkdir -p /etc/systemd/system/docker.service.d/
 echo -e "[Service]\nEnvironment=\"https_proxy=http://$proxy:8123/\" \"http_proxy=http://$proxy:8123/\"" | sudo tee /etc/systemd/system/docker.service.d/http-proxy.conf
 
 sudo gpasswd -a ${USER} docker
+sudo systemctl enable docker.service
 
 # 移动 Docker 镜像
 sudo systemctl daemon-reload

@@ -1,39 +1,30 @@
-touch ssh ; code config.txt ; code /mnt/Sync/Server/RaspberryPi/boot/config.txt
-ssh-copy-id -i /mnt/Sync/Server/ssh/id_ed25519.pub pi@192.168.3.102
-ssh pi@192.168.3.102
-
-sudo passwd pi 
-
 # 代理
 proxy=192.168.3.102
 export http_proxy=http://$proxy:8123/ && export https_proxy=http://$proxy:8123/ 
-echo -e "Acquire::http::proxy \"http://$proxy:8123/\";\nAcquire::https::Proxy \"http://$proxy:8123/\";" | sudo tee /etc/apt/apt.conf
+echo -e "proxy=http://$proxy:8123" | sudo tee -a /etc/dnf/dnf.conf
 
-alias up='sudo apt -yqq update && sudo apt -y upgrade && sudo apt -y dist-upgrade && sudo apt -y autoremove --purge && sudo apt autoclean && sudo apt clean'
+alias up='sudo dnf -y update && sudo dnf -y upgrade && sudo dnf -y autoremove && sudo dnf -q clean all'
 
-sudo apt purge -y firefox* hplip* printer-driver* gedit* vim-common && sudo apt -y autoremove --purge
-sudo apt -y install --no-install-recommends vim
-sudo rm -rf /usr/share/hplip /usr/share/fonts/truetype/liberation2 /usr/share/fonts/truetype/openoffice
+sudo dnf autoremove -y firefox* hplip* vim* gedit* libreoffice*
+sudo rm -rf /usr/lib64/firefox
+sudo dnf install -y https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm https://mirrors.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm
+up
+sudo dnf -y install vim
 
 # 调整系统
 sudo vi /etc/systemd/system.conf
 sudo vi /etc/default/grub
-# GRUB_DISABLE_OS_PROBER=false
+#GRUB_DISABLE_OS_PROBER=false
 
 # 修复 apt 自动补全
-sudo apt install bash-completion --reinstall
+sudo dnf -y reinstall bash-completion
 
 # 禁用传统 SWAP
 sudo vi /etc/fstab
-# 修改交换文件大小(pi)
-sudo vi /etc/dphys-swapfile ; sudo systemctl restart dphys-swapfile.service
-sudo reboot
 
 # 启用 zRAM
 echo "zram" | sudo tee /etc/modules-load.d/zram.conf
 echo "options zram num_devices=1" | sudo tee /etc/modprobe.d/zram.conf
-# pi
-# echo 'KERNEL=="zram0", ATTR{disksize}="1024M",TAG+="systemd"' | sudo tee /etc/udev/rules.d/99-zram.rules
 echo 'KERNEL=="zram0", ATTR{disksize}="2048M",TAG+="systemd"' | sudo tee /etc/udev/rules.d/99-zram.rules
 sudo vi /etc/systemd/system/zram.service && sudo systemctl enable zram
 ```ini
@@ -112,21 +103,16 @@ cp /mnt/System/Documents/Font/FiraCode/otf/FiraCode-* ~/.local/share/fonts/
 cp /mnt/System/Documents/Font/source-han-serif/SuperOTC/SourceHanSerif.ttc ~/.local/share/fonts/
 fc-cache -f -v
 
-# apt
-echo "deb http://ppa.launchpad.net/git-core/ppa/ubuntu/ $(lsb_release -cs) main" | sudo tee -a /etc/apt/sources.list.d/git.list
-echo "deb http://ppa.launchpad.net/mc3man/mpv-tests/ubuntu/ groovy main" | sudo tee -a /etc/apt/sources.list.d/mpv.list
-echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" | sudo tee -a /etc/apt/sources.list.d/google-chrome.list
-echo "deb [arch=amd64] http://packages.microsoft.com/repos/vscode stable main" | sudo tee -a /etc/apt/sources.list.d/vscode.list
-wget -q https://packages.microsoft.com/keys/microsoft.asc -O- | sudo apt-key add -
-wget -q https://dl-ssl.google.com/linux/linux_signing_key.pub -O- | sudo apt-key add -
-sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 379CE192D401AB61 A1715D88E1DF1F24 90BD7EACED8E640A
-up ; sudo apt install -y git ncdu google-chrome-stable make nginx gcc g++ openssh-server screen ntpdate curl net-tools mpv jq gnome-tweak-tool chrome-gnome-shell fcitx-googlepinyin stow code imwheel ffmpeg rename gettext
-# apt(pi)
-sudo apt -y install git ncdu screen samba ffmpeg lsof rename
+# dnf
+echo -e "[code]\nname=Visual Studio Code\nbaseurl=https://packages.microsoft.com/yumrepos/vscode\nenabled=1\ngpgcheck=1\ngpgkey=https://packages.microsoft.com/keys/microsoft.asc" | sudo tee /etc/yum.repos.d/vscode.repo
+sudo rpm --import https://packages.microsoft.com/keys/microsoft.asc
+
+up ; sudo dnf install -y mpv mpv-libs ncdu google-chrome-stable screen stow ffmpeg nginx code imwheel
+gnome-tweak
+
+ gettext
 
 # git-lfs
-# pi
-# curl -sSf "https://packagecloud.io/install/repositories/github/git-lfs/config_file.list?os=Debian&dist=$(lsb_release -cs)&source=script" | sudo tee /etc/apt/sources.list.d/git-lfs.list
 curl -sSf "https://packagecloud.io/install/repositories/github/git-lfs/config_file.list?os=Ubuntu&dist=$(lsb_release -cs)&source=script" | sudo tee /etc/apt/sources.list.d/git-lfs.list
 wget -q https://packagecloud.io/github/git-lfs/gpgkey -O- | sudo apt-key add -
 up && sudo apt -y install git-lfs
@@ -147,17 +133,16 @@ echo 'SUBSYSTEM=="usb", ATTRS{idVendor}=="045e",ATTRS{idProduct}=="02fe",MODE="0
 sudo systemctl restart udev.service
 
 # 优化系统
-gsettings set org.gnome.shell.extensions.dash-to-dock click-action 'minimize'
 gsettings set org.gnome.desktop.interface show-battery-percentage true
 gsettings set org.gnome.desktop.session idle-delay 3600
 
-# Python 3.9 https://www.python.org/downloads/source/
+# Python 3.10 https://www.python.org/downloads/source/
 screen -S py
-version=3.9.9
+version=3.10.1
 fq
 wget https://www.python.org/ftp/python/$version/Python-$version.tar.xz
 tar Jxf Python-$version.tar.xz ; cd Python-$version/
-sudo apt install -y libsqlite3-dev libssl-dev libffi-dev libbz2-dev zlib1g-dev
+sudo dnf install -y libsqlite3x-devel openssl-devel libffi-devel bzip2-devel zlib-devel
 ./configure --enable-loadable-sqlite-extensions --enable-optimizations 
 make -j16 ; sudo make install -j16
 python3 -V
@@ -198,8 +183,8 @@ version=16.13.1
 fnm install v$version
 npm install npm -g
 
-# go https://golang.org/dl/
+# go https://go.dev/dl/
 version=1.17.5
-wget https://golang.org/dl/go$version.linux-amd64.tar.gz
+wget https://go.dev/dl/go$version.linux-amd64.tar.gz
 sudo tar zxf go$version.linux-amd64.tar.gz -C /usr/
 rm -rf go$version.linux-amd64.tar.gz
