@@ -13,7 +13,7 @@ alias up='sudo apt -yqq update && sudo apt -y upgrade && sudo apt -y dist-upgrad
 
 sudo apt purge -y firefox* hplip* printer-driver* gedit* vim-common && sudo apt -y autoremove --purge
 sudo apt -y install --no-install-recommends vim
-sudo rm -rf /usr/share/hplip /usr/share/fonts/truetype/liberation2 /usr/share/fonts/truetype/openoffice
+sudo rm -rf /usr/share/hplip
 
 # 调整系统
 sudo vi /etc/systemd/system.conf
@@ -34,7 +34,7 @@ echo "zram" | sudo tee /etc/modules-load.d/zram.conf
 echo "options zram num_devices=1" | sudo tee /etc/modprobe.d/zram.conf
 # pi
 # echo 'KERNEL=="zram0", ATTR{disksize}="1024M",TAG+="systemd"' | sudo tee /etc/udev/rules.d/99-zram.rules
-echo 'KERNEL=="zram0", ATTR{disksize}="2048M",TAG+="systemd"' | sudo tee /etc/udev/rules.d/99-zram.rules
+echo 'KERNEL=="zram0", ATTR{disksize}="4096M",TAG+="systemd"' | sudo tee /etc/udev/rules.d/99-zram.rules
 sudo vi /etc/systemd/system/zram.service && sudo systemctl enable zram
 ```ini
 [Unit]
@@ -84,7 +84,6 @@ sudo mount /mnt/Linux/VHD.img ~/VHD
 mkdir ~/Android
 sudo mount /mnt/Linux/Android.img ~/Android
 echo "/mnt/Linux/VHD.img /home/ljason/VHD ext4 defaults 0 0" | sudo tee -a /etc/fstab
-echo "/mnt/Linux/Android.img /home/ljason/Android ext4 defaults 0 0" | sudo tee -a /etc/fstab
 cd ~/VHD/gitSou/dotfiles ; ./install.sh ; cd
 rm -rf Music && ln -s /mnt/System/Music .
 rm -rf Pictures && ln -s /mnt/System/Pictures .
@@ -131,9 +130,9 @@ curl -sSf "https://packagecloud.io/install/repositories/github/git-lfs/config_fi
 wget -q https://packagecloud.io/github/git-lfs/gpgkey -O- | sudo apt-key add -
 up && sudo apt -y install git-lfs
 
-google-chrome-stable --proxy-server="socks5://$proxy:1080" &
+google-chrome-stable --proxy-server="socks5://$proxy:1080" & > /dev/null 2>&1
 # GNOME 扩展
-google-chrome-stable https://extensions.gnome.org/extension/104/netspeed/ &
+google-chrome-stable https://extensions.gnome.org/extension/104/netspeed/ & > /dev/null 2>&1
 
 # 时间
 sudo ntpdate ntp5.aliyun.com && sudo hwclock --localtime --systohc

@@ -1,12 +1,11 @@
 # Telegram
 cd ~/Documents/Software/
 google-chrome-stable https://telegram.org/dl/desktop/linux &
-sudo tar Jxf tsetup.*.tar.xz -C /opt/
+sudo tar Jxf Telegram-*.tar.xz -C /opt/
 
 # Discord
 google-chrome-stable "https://discord.com/api/download?platform=linux&format=tar.gz" &
-sudo tar zxf discord-*.tar.gz -C /opt/
-sudo chown -R 1000:1000 /opt/Discord
+sudo tar Jxf Discord-*.tar.xz -C /opt/
 
 # 虚拟机
 echo "deb [arch=amd64] http://download.virtualbox.org/virtualbox/debian $(lsb_release -cs) contrib" | sudo tee -a /etc/apt/sources.list.d/virtualbox.list
@@ -14,13 +13,13 @@ wget -q https://www.virtualbox.org/download/oracle_vbox_2016.asc -O- | sudo apt-
 wget -q https://www.virtualbox.org/download/oracle_vbox.asc -O- | sudo apt-key add -
 up
 virtualbox=$(curl http://download.virtualbox.org/virtualbox/LATEST.TXT)
-cd /mnt/Executable/ ; wget https://download.virtualbox.org/virtualbox/$virtualbox/Oracle_VM_VirtualBox_Extension_Pack-$virtualbox.vbox-extpack
+wget https://download.virtualbox.org/virtualbox/$virtualbox/Oracle_VM_VirtualBox_Extension_Pack-$virtualbox.vbox-extpack -O /mnt/Executable/Oracle_VM_VirtualBox_Extension_Pack-$virtualbox.vbox-extpack
 sudo apt install bash-completion --reinstall
 sudo apt -y install virtualbox-6.1
 sudo gpasswd -a ${USER} vboxusers
 
 # XMind
-google-chrome-stable https://www.xmind.net/zen/download/linux_deb/ &
+google-chrome-stable https://www.xmind.net/zen/download/linux_deb/ & > /dev/null 2>&1
 cd ~/Documents/Software/ ; sudo dpkg -i XMind-for-Linux-amd-64bit-*.deb
 sudo chown -R 1000:1000 /opt/XMind
 cd /opt/XMind/resources
@@ -36,14 +35,11 @@ up ; sudo apt install typora
 # Postman
 google-chrome-stable https://dl.pstmn.io/download/latest/linux64 &
 cd ~/Documents/Software/
-sudo tar zxf Postman-linux-x86_64-*.tar.gz -C /opt/
-sudo chown -R 1000:1000 /opt/Postman
+sudo tar Jxf Postman-*.tar.xz -C /opt/
 
 # FreeFileSync
 google-chrome-stable https://freefilesync.org/download.php &
-tar zxf FreeFileSync_*_Linux.tar.gz ; rm $_
-./FreeFileSync_*_Install.run
-sudo chown -R 1000:1000 /opt/FreeFileSync
+sudo tar Jxf FreeFileSync-*.tar.xz -C /opt/
 
 # Office
 google-chrome-stable "https://www.libreoffice.org/download/download/?type=deb-x86_64&lang=zh-CN" &
