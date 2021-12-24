@@ -1,9 +1,3 @@
-touch ssh ; code config.txt ; code /mnt/Sync/Server/RaspberryPi/boot/config.txt
-ssh-copy-id -i /mnt/Sync/Server/ssh/id_ed25519.pub pi@192.168.3.102
-ssh pi@192.168.3.102
-
-sudo passwd pi 
-
 # 代理
 proxy=192.168.3.102
 export http_proxy=http://$proxy:8123/ && export https_proxy=http://$proxy:8123/ 
@@ -25,15 +19,10 @@ sudo apt install bash-completion --reinstall
 
 # 禁用传统 SWAP
 sudo vi /etc/fstab
-# 修改交换文件大小(pi)
-sudo vi /etc/dphys-swapfile ; sudo systemctl restart dphys-swapfile.service
-sudo reboot
 
 # 启用 zRAM
 echo "zram" | sudo tee /etc/modules-load.d/zram.conf
 echo "options zram num_devices=1" | sudo tee /etc/modprobe.d/zram.conf
-# pi
-# echo 'KERNEL=="zram0", ATTR{disksize}="1024M",TAG+="systemd"' | sudo tee /etc/udev/rules.d/99-zram.rules
 echo 'KERNEL=="zram0", ATTR{disksize}="4096M",TAG+="systemd"' | sudo tee /etc/udev/rules.d/99-zram.rules
 sudo vi /etc/systemd/system/zram.service && sudo systemctl enable zram
 ```ini
@@ -53,20 +42,9 @@ WantedBy=multi-user.target
 ```
 
 # 系统参数
-cat /proc/sys/vm/swappiness
-sudo sysctl -a | grep vm.swappiness
 echo "vm.swappiness = 5" | sudo tee -a /etc/sysctl.conf
-sudo sysctl -a | grep net.core.somaxconn
-echo "net.core.somaxconn = 4096" | sudo tee -a /etc/sysctl.conf
-sudo sysctl -a | grep kernel.shmmax
-echo "kernel.shmmax = 18446744073692774399" | sudo tee -a /etc/sysctl.conf
-sudo sysctl -a | grep fs.inotify.max_user_watches
 echo 'fs.inotify.max_user_watches = 524288' | sudo tee -a /etc/sysctl.conf
 sudo sysctl -p
-
-# 修改交换文件大小(pi)
-sudo vi /etc/dphys-swapfile ; sudo systemctl restart dphys-swapfile.service
-sudo reboot
 
 # 删除快捷方式
 rm -rf Desktop
@@ -77,12 +55,11 @@ sudo vi /etc/bash.bashrc
 
 # 挂载存储
 sudo fdisk -l
-echo "/dev/sda1 /mnt ntfs-3g uid=ljason,gid=ljason,silent,locale=zh_CN.utf8 0 0" | sudo tee -a /etc/fstab
+ls -l  /dev/disk/by-uuid/ | grep sda1 | awk '{print $9}'
+echo "UUID=$(ls -l  /dev/disk/by-uuid/ | grep sda1 | awk '{print $9}') /mnt ntfs-3g uid=1000,gid=1000,silent,locale=zh_CN.utf8 0 0" | sudo tee -a /etc/fstab
 sudo umount /dev/sda1 ; sudo mount /dev/sda1 /mnt
 mkdir ~/VHD
 sudo mount /mnt/Linux/VHD.img ~/VHD
-mkdir ~/Android
-sudo mount /mnt/Linux/Android.img ~/Android
 echo "/mnt/Linux/VHD.img /home/ljason/VHD ext4 defaults 0 0" | sudo tee -a /etc/fstab
 cd ~/VHD/gitSou/dotfiles ; ./install.sh ; cd
 rm -rf Music && ln -s /mnt/System/Music .
@@ -93,12 +70,6 @@ rm -rf Documents && ln -s /mnt/System/Documents .
 cp /mnt/Sync/Server/Desktop/ljason/ssh/id_ed25519 .ssh/
 ln -s /mnt/VirtualBox\ VMs/Linux VirtualBox\ VMs
 chmod 600 .ssh/id_ed25519
-
-# 挂载硬盘（pi）
-sudo fdisk -l
-sudo umount /dev/sda1 ; sudo mount /dev/sda1 /mnt ; ls -la /mnt/
-ls -l  /dev/disk/by-uuid/ | grep sdb1 | awk '{print $9}'
-echo "UUID=$(ls -l  /dev/disk/by-uuid/ | grep sdb1 | awk '{print $9}') /mnt ext4 defaults 0 0" | sudo tee -a /etc/fstab ; cat /etc/fstab
 
 # 隐藏挂载硬盘
 gsettings set org.gnome.shell.extensions.dash-to-dock show-mounts false
@@ -114,18 +85,14 @@ fc-cache -f -v
 # apt
 echo "deb http://ppa.launchpad.net/git-core/ppa/ubuntu/ $(lsb_release -cs) main" | sudo tee -a /etc/apt/sources.list.d/git.list
 echo "deb http://ppa.launchpad.net/mc3man/mpv-tests/ubuntu/ groovy main" | sudo tee -a /etc/apt/sources.list.d/mpv.list
-echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" | sudo tee -a /etc/apt/sources.list.d/google-chrome.list
-echo "deb [arch=amd64] http://packages.microsoft.com/repos/vscode stable main" | sudo tee -a /etc/apt/sources.list.d/vscode.list
+echo "deb [arch=$(dpkg --print-architecture)] http://dl.google.com/linux/chrome/deb/ stable main" | sudo tee -a /etc/apt/sources.list.d/google-chrome.list
+echo "deb [arch=$(dpkg --print-architecture)] http://packages.microsoft.com/repos/vscode stable main" | sudo tee -a /etc/apt/sources.list.d/vscode.list
 wget -q https://packages.microsoft.com/keys/microsoft.asc -O- | sudo apt-key add -
 wget -q https://dl-ssl.google.com/linux/linux_signing_key.pub -O- | sudo apt-key add -
 sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 379CE192D401AB61 A1715D88E1DF1F24 90BD7EACED8E640A
-up ; sudo apt install -y git ncdu google-chrome-stable make nginx gcc g++ openssh-server screen ntpdate curl net-tools mpv jq gnome-tweak-tool chrome-gnome-shell fcitx-googlepinyin stow code imwheel ffmpeg rename gettext
-# apt(pi)
-sudo apt -y install git ncdu screen samba ffmpeg lsof rename
+up ; sudo apt install -y git ncdu google-chrome-stable make nginx gcc g++ openssh-server screen ntpdate curl net-tools mpv jq gnome-tweak-tool chrome-gnome-shell fcitx-googlepinyin stow code imwheel ffmpeg rename
 
 # git-lfs
-# pi
-# curl -sSf "https://packagecloud.io/install/repositories/github/git-lfs/config_file.list?os=Debian&dist=$(lsb_release -cs)&source=script" | sudo tee /etc/apt/sources.list.d/git-lfs.list
 curl -sSf "https://packagecloud.io/install/repositories/github/git-lfs/config_file.list?os=Ubuntu&dist=$(lsb_release -cs)&source=script" | sudo tee /etc/apt/sources.list.d/git-lfs.list
 wget -q https://packagecloud.io/github/git-lfs/gpgkey -O- | sudo apt-key add -
 up && sudo apt -y install git-lfs
@@ -164,7 +131,7 @@ sudo python3 -m pip install --upgrade pip
 cd .. ; sudo rm -rf Python-$version*
 exit
 # bilili
-pip3 install bilili youtube-dl
+pip3 install --upgrade bilili youtube-dl
 
 # 模糊搜索
 git clone --depth=1 https://github.com/junegunn/fzf.git ~/.fzf
@@ -194,11 +161,11 @@ up ; sudo apt install gh
 
 # node https://nodejs.org/en/download/
 version=16.13.1
-fnm install v$version
+fnm install v$version && fnm default v$version
 npm install npm -g
 
-# go https://golang.org/dl/
+# go https://go.dev/dl/
 version=1.17.5
-wget https://golang.org/dl/go$version.linux-amd64.tar.gz
+wget https://go.dev/dl/go$version.linux-amd64.tar.gz
 sudo tar zxf go$version.linux-amd64.tar.gz -C /usr/
 rm -rf go$version.linux-amd64.tar.gz

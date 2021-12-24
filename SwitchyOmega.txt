@@ -1,6 +1,8 @@
 [SwitchyOmega Conditions]
 @with result
 
+*.telegra.ph +http
+*.dmhy.org +http
 *.go.dev +http
 *.raspberrypi.com +http
 *.dbeaver.com +http

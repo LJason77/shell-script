@@ -4,7 +4,6 @@ up
 
 sudo apt -y install linux-image-extra-virtual apt-transport-https ca-certificates curl software-properties-common
 curl -fsSL "https://download.docker.com/linux/$(. /etc/os-release; echo "$ID")/gpg" | sudo apt-key add -
-sudo apt-key fingerprint 0EBFCD88
 echo -e "deb [arch=$(dpkg --print-architecture)] http://download.docker.com/linux/$(. /etc/os-release; echo "$ID") $(lsb_release -cs) stable edge" | sudo tee -a /etc/apt/sources.list.d/docker.list
 
 up ; sudo apt -yqq install docker-ce
@@ -33,33 +32,11 @@ echo -e "[Service]\nEnvironment=\"https_proxy=http://$proxy:8123/\" \"http_proxy
 
 sudo gpasswd -a ${USER} docker
 
-# 移动 Docker 镜像
-sudo systemctl daemon-reload
-sudo systemctl restart docker.socket
-sudo systemctl restart docker.service
-sudo mv /var/lib/docker /mnt/Docker/.dockerImages
-# 链接镜像
-#sudo rm -rf /var/lib/docker
-sudo ln -s /mnt/Docker/.dockerImages /var/lib/docker
-reboot
-
-# 基础镜像
-docker pull alpine
-docker pull golang:alpine
-docker pull linuxserver/qbittorrent
-docker pull rust:alpine
-docker pull ubuntu:20.04
-docker pull mongo
-
 # clash
-# git@github.com:LJason77/docker-clash.git
-# cd /mnt/Docker/docker-Src/docker-clash
 cd ~/VHD/gitSou/docker-clash
 sudo docker build --build-arg http_proxy="http://$proxy:8123" --build-arg https_proxy="http://$proxy:8123" -t clash .
-# cd /mnt/clash.yaml/
 cd ~/Documents/clash.yaml/
 git pull
-# docker rm -f clash ; docker run -d --restart always --name clash -v /mnt/clash.yaml/clash.yaml:/root/.config/clash/config.yaml --network host clash
 sudo docker rm -f clash ; sudo docker run -d --restart always --name clash -v ~/Documents/clash.yaml/clash.yaml:/root/.config/clash/config.yaml --network host clash
 
 proxy=192.168.3.101
@@ -67,60 +44,15 @@ echo -e "[Service]\nEnvironment=\"https_proxy=http://$proxy:8123/\" \"http_proxy
 echo -e "Acquire::http::proxy \"http://$proxy:8123/\";\nAcquire::https::Proxy \"http://$proxy:8123/\";" | sudo tee /etc/apt/apt.conf
 
 # Aria2
-# cd /mnt/Docker/docker-Src/docker-aria2-with-webui/
 cd ~/VHD/gitSou/docker-aria2-with-webui
 git pull
 sudo docker build --build-arg http_proxy="http://$proxy:8123" --build-arg https_proxy="http://$proxy:8123" -t aria2 .
-# docker rm -f aria2 ; docker run -d --name aria2 --restart always --network host -e SECRET=333544 -v /mnt/downloads:/data aria2
 sudo docker rm -f aria2 ; sudo docker run -d --restart always --name aria2 --network host -e SECRET=333544 -v ~/Downloads:/data aria2
-
-# qbittorrent
-docker pull linuxserver/qbittorrent
-docker rm -f qbittorrent ; docker run -d --name qbittorrent --restart always -e PUID=1000 -e PGID=1000 -e TZ=Asia/Shanghai -e UMASK=022 -e WEBUI_PORT=8080 --network host -v /mnt/Data/qbittorrent/config:/config -v /mnt/downloads/qbittorrent:/downloads linuxserver/qbittorrent
-
-# ZeroNet
-# docker pull ljason/zeronet
-screen -S ZeroNet
-proxy=192.168.3.102
-cd /mnt/Docker/docker-Src/ZeroNet/
-git fetch upstream
-git merge upstream/py3
-git pull
-docker build --build-arg http_proxy="http://$proxy:8123" --build-arg https_proxy="http://$proxy:8123" -t zeronet .
-docker rm -f zeronet ; docker run -d --name zeronet --restart always --network host -v /mnt/Data/ZeroNet:/root/data zeronet
-exit
 
 # darkhttpd
 cd ; git clone --depth=1 https://github.com/emikulic/darkhttpd.git && cd darkhttpd
 docker build --build-arg http_proxy="http://$proxy:8123" --build-arg https_proxy="http://$proxy:8123" -t darkhttpd .
 .. ; rm -rf darkhttpd
-
-# RssHub
-# git clone --depth=1 https://github.com/LJason77/docker-rsshub.git
-screen -S rsshub
-proxy=192.168.3.102
-cd /mnt/Docker/docker-Src/docker-rsshub
-docker build --no-cache --build-arg http_proxy="http://$proxy:8123" --build-arg https_proxy="http://$proxy:8123" -t rsshub .
-# https://api.vc.bilibili.com/dynamic_svr/v1/dynamic_svr/dynamic_new?uid=0&type=8
-docker exec -it rsshub env
-```ini
-BILIBILI_COOKIE_4744634=
-ACCESS_KEY=
-TWITTER_CONSUMER_KEY=
-TWITTER_CONSUMER_SECRET=
-TWITTER_TOKEN_LJason77=
-```
-docker rm -f rsshub ; docker run -d --restart always --name rsshub -p 80:1200 -e REQUEST_RETRY=10 -e DEBUG_INFO=true -e CACHE_CONTENT_EXPIRE=180 -e ACCESS_KEY=$ACCESS_KEY -e NODE_TLS_REJECT_UNAUTHORIZED=0 -e PROXY_URI=http://$proxy:8123 -e BILIBILI_COOKIE_4744634=$BILIBILI_COOKIE_4744634 -e TWITTER_CONSUMER_KEY=$TWITTER_CONSUMER_KEY -e TWITTER_CONSUMER_SECRET=$TWITTER_CONSUMER_SECRET -e TWITTER_TOKEN_LJason77=$TWITTER_TOKEN_LJason77 rsshub
-exit
-
-# flowerss
-cd /mnt/Docker/docker-Src/docker-flowerss-bot/
-docker build --build-arg http_proxy="http://$proxy:8123" --build-arg https_proxy="http://$proxy:8123" -t flowerss .
-docker rm -f flowerss ; docker run --restart always --name flowerss -d --network host -v /mnt/Data/flowerss:/flowerss flowerss
-
-# WarframeBot
-cd /mnt/Github/WarframeBot ; git pull
-docker build --build-arg http_proxy="http://$proxy:8123" --build-arg https_proxy="http://$proxy:8123" -t warframe .
 
 # mongo
 # 树莓派不支持 5.0,需要安装 4.4
