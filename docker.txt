@@ -22,7 +22,7 @@ sudo mkdir -p /etc/docker && sudo vi $_/daemon.json
 ```
 
 # 安装 docker-compose
-pip3 install docker-compose
+pip3 install -U docker-compose
 mkdir -p ~/.local/share/bash-completion/completions
 curl -L https://raw.githubusercontent.com/docker/compose/master/contrib/completion/bash/docker-compose > ~/.local/share/bash-completion/completions/docker-compose 
 
@@ -34,7 +34,7 @@ sudo gpasswd -a ${USER} docker
 
 # clash
 cd ~/VHD/gitSou/docker-clash
-sudo docker build --build-arg http_proxy="http://$proxy:8123" --build-arg https_proxy="http://$proxy:8123" -t clash .
+sudo docker build --no-cache --build-arg http_proxy="http://$proxy:8123" --build-arg https_proxy="http://$proxy:8123" -t clash .
 cd ~/Documents/clash.yaml/
 git pull
 sudo docker rm -f clash ; sudo docker run -d --restart always --name clash -v ~/Documents/clash.yaml/clash.yaml:/root/.config/clash/config.yaml --network host clash
@@ -68,4 +68,6 @@ db.createUser({user: 'user_name',pwd: 'password',roles: [{ role: 'dbOwner', db: 
 # 阿里云盘
 docker pull messense/aliyundrive-webdav
 REFRESH_TOKEN=
-docker run -d --name aliyundrive-webdav --restart always -p 7777:8080 -v ~/Downloads/aliyundrive-webdav/:/etc/aliyundrive-webdav/ -e WEBDAV_AUTH_USER=admin -e WEBDAV_AUTH_PASSWORD=admin -e REFRESH_TOKEN="$REFRESH_TOKEN" messense/aliyundrive-webdav
+docker rm -f aliyundrive-webdav ; docker run -d --name aliyundrive-webdav --restart always -p 7777:8080 -v ~/Downloads/aliyundrive-webdav/:/etc/aliyundrive-webdav/ -e WEBDAV_AUTH_USER=admin -e WEBDAV_AUTH_PASSWORD=admin -e REFRESH_TOKEN="$REFRESH_TOKEN" messense/aliyundrive-webdav
+
+yes | docker system prune

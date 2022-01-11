@@ -78,9 +78,9 @@ echo "Public" >> ~/.hidden
 
 # 安装字体
 mkdir ~/.local/share/fonts
-cp /mnt/System/Documents/Font/FiraCode/otf/FiraCode-* ~/.local/share/fonts/
+cp /mnt/System/Documents/Font/FiraCode/ttf/FiraCode-* ~/.local/share/fonts/
 cp /mnt/System/Documents/Font/source-han-serif/SuperOTC/SourceHanSerif.ttc ~/.local/share/fonts/
-fc-cache -f -v
+fc-cache -f
 
 # apt
 echo "deb http://ppa.launchpad.net/git-core/ppa/ubuntu/ $(lsb_release -cs) main" | sudo tee -a /etc/apt/sources.list.d/git.list
@@ -131,7 +131,7 @@ sudo python3 -m pip install --upgrade pip
 cd .. ; sudo rm -rf Python-$version*
 exit
 # bilili
-pip3 install --upgrade bilili youtube-dl
+pip3 install -U bilili youtube-dl
 
 # 模糊搜索
 git clone --depth=1 https://github.com/junegunn/fzf.git ~/.fzf
@@ -160,12 +160,12 @@ sudo apt-add-repository https://cli.github.com/packages
 up ; sudo apt install gh
 
 # node https://nodejs.org/en/download/
-version=16.13.1
+version=16.13.2
 fnm install v$version && fnm default v$version
 npm install npm -g
 
 # go https://go.dev/dl/
-version=1.17.5
+version=1.17.6
 wget https://go.dev/dl/go$version.linux-amd64.tar.gz
 sudo tar zxf go$version.linux-amd64.tar.gz -C /usr/
 rm -rf go$version.linux-amd64.tar.gz
