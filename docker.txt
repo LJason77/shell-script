@@ -57,13 +57,8 @@ docker build --build-arg http_proxy="http://$proxy:8123" --build-arg https_proxy
 # mongo
 # 树莓派不支持 5.0,需要安装 4.4
 docker pull mongo:4.4
-docker run -d --name mongo --restart always -e MONGO_INITDB_ROOT_USERNAME=mongo -e MONGO_INITDB_ROOT_PASSWORD=mongo -v ~/.db/mongo:/data/db -p 27017:27017 mongo:4.4 --wiredTigerCollectionBlockCompressor zlib
-docker exec -it mongo mongo --username mongo --password mongo --authenticationDatabase admin
-```mongo
-use my_db
-# 添加用户
-db.createUser({user: 'user_name',pwd: 'password',roles: [{ role: 'dbOwner', db: 'my_db' }]})
-```
+touch ~/VHD/.db/mongo/conf/mongod.log && chmod 666 $_
+docker run -d --name mongo --restart always -v ~/VHD/.db/mongo/db:/data/db -v ~/VHD/.db/mongo/conf:/etc/mongo -p 27017:27017 mongo:4.4 --config /etc/mongo/mongod.conf
 
 # 阿里云盘
 docker pull messense/aliyundrive-webdav
